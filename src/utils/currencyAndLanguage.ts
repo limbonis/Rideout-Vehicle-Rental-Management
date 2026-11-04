@@ -10,6 +10,33 @@ export const SUPPORTED_CURRENCIES: CurrencyConfig[] = [
   { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar', rateFromPHP: 0.023 },
 ];
 
+export interface SoutheastAsiaCountry {
+  code: string;
+  name: string;
+  flag: string;
+  defaultCurrency: SupportedCurrency;
+  defaultLanguage: SupportedLanguage;
+}
+
+export const SOUTHEAST_ASIA_COUNTRIES: SoutheastAsiaCountry[] = [
+  { code: 'PH', name: 'Philippines', flag: '🇵🇭', defaultCurrency: 'PHP', defaultLanguage: 'en' },
+  { code: 'TH', name: 'Thailand', flag: '🇹🇭', defaultCurrency: 'THB', defaultLanguage: 'th' },
+  { code: 'ID', name: 'Indonesia', flag: '🇮🇩', defaultCurrency: 'IDR', defaultLanguage: 'id' },
+  { code: 'VN', name: 'Vietnam', flag: '🇻🇳', defaultCurrency: 'VND', defaultLanguage: 'vi' },
+  { code: 'MY', name: 'Malaysia', flag: '🇲🇾', defaultCurrency: 'MYR', defaultLanguage: 'en' },
+  { code: 'SG', name: 'Singapore', flag: '🇸🇬', defaultCurrency: 'SGD', defaultLanguage: 'en' },
+];
+
+export const CURRENCY_FLAGS: Record<SupportedCurrency, string> = {
+  PHP: '🇵🇭',
+  USD: '🇺🇸',
+  THB: '🇹🇭',
+  IDR: '🇮🇩',
+  VND: '🇻🇳',
+  MYR: '🇲🇾',
+  SGD: '🇸🇬',
+};
+
 export const SUPPORTED_LANGUAGES: Array<{ code: SupportedLanguage; label: string; flag: string }> = [
   { code: 'en', label: 'English', flag: '🇺🇸' },
   { code: 'fil', label: 'Filipino', flag: '🇵🇭' },

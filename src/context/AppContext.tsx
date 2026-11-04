@@ -34,6 +34,7 @@ import { INITIAL_CHAT_THREADS } from '../data/mockSocialChats';
 import { DEFAULT_SMART_PRICING_CONFIG } from '../types/smartPricing';
 
 export type NavigationTab = 
+  | 'landing'
   | 'overview' 
   | 'reservations' 
   | 'pickups' 
@@ -209,7 +210,7 @@ const STORAGE_KEYS = {
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [activeTab, setActiveTab] = useState<NavigationTab>('customer-portal');
+  const [activeTab, setActiveTab] = useState<NavigationTab>('landing');
   const [selectedReservationForPickup, setSelectedReservationForPickup] = useState<Reservation | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -270,7 +271,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [businesses, setBusinesses] = useState<RentalBusiness[]>(() => {
     try {
       const saved = localStorage.getItem('rideout_businesses_v2');
-      return saved ? JSON.parse(saved) : INITIAL_BUSINESSES;
+      if (saved) {
+        const parsed: RentalBusiness[] = JSON.parse(saved);
+        return parsed.map(b => 
+          b.id === 'biz-rideout' && (b.name === 'RideOut Zambales Moto Rentals' || b.name === 'RideOut Moto Rentals & Operations') 
+            ? { ...b, name: 'RideOUT Vehicle Rental Management' } 
+            : b
+        );
+      }
+      return INITIAL_BUSINESSES;
     } catch {
       return INITIAL_BUSINESSES;
     }

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1917" />
+      <stop offset="100%" stop-color="#0c0a09" />
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+  </defs>
+  <!-- Background with rounded squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="#292524" stroke-width="8" />
+  
+  <!-- Outer glowing accent ring -->
+  <circle cx="256" cy="256" r="190" fill="none" stroke="url(#amberGrad)" stroke-width="6" stroke-dasharray="16 12" opacity="0.6" />
+  
+  <!-- Motorcycle Icon stylized -->
+  <g transform="translate(64, 110) scale(0.75)">
+    <!-- Back Wheel -->
+    <circle cx="100" cy="300" r="70" fill="none" stroke="#fbbf24" stroke-width="24" />
+    <circle cx="100" cy="300" r="30" fill="#292524" stroke="#d97706" stroke-width="8" />
+    
+    <!-- Front Wheel -->
+    <circle cx="410" cy="300" r="70" fill="none" stroke="#fbbf24" stroke-width="24" />
+    <circle cx="410" cy="300" r="30" fill="#292524" stroke="#d97706" stroke-width="8" />
+    
+    <!-- Chassis / Body Frame -->
+    <path d="M100 300 L180 200 L280 200 L340 140 L410 300" fill="none" stroke="#f5f5f4" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M180 200 L256 300 L370 300" fill="none" stroke="#fbbf24" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- Engine / Core Block -->
+    <rect x="200" y="230" width="70" height="60" rx="12" fill="#d97706" />
+    
+    <!-- Fuel Tank & Seat -->
+    <path d="M160 190 Q240 160 290 190 L260 215 L170 215 Z" fill="url(#amberGrad)" />
+    
+    <!-- Handlebar & Mirror -->
+    <path d="M330 140 L350 110 L380 110" fill="none" stroke="#f5f5f4" stroke-width="16" stroke-linecap="round" />
+    <circle cx="380" cy="95" r="12" fill="#fbbf24" />
+    
+    <!-- Speed Lines / Escape Wind -->
+    <line x1="10" y1="210" x2="110" y2="210" stroke="#fbbf24" stroke-width="12" stroke-linecap="round" opacity="0.8" />
+    <line x1="-20" y1="250" x2="60" y2="250" stroke="#fbbf24" stroke-width="10" stroke-linecap="round" opacity="0.5" />
+    <line x1="20" y1="290" x2="70" y2="290" stroke="#fbbf24" stroke-width="8" stroke-linecap="round" opacity="0.3" />
+  </g>
+
+  <!-- Brand Typography Badge -->
+  <text x="256" y="440" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900" fill="#f5f5f4" text-anchor="middle" letter-spacing="4">RIDEOUT</text>
+  <text x="256" y="475" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="700" fill="#fbbf24" text-anchor="middle" letter-spacing="6">RENTALS</text>
+</svg>

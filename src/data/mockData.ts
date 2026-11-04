@@ -417,10 +417,10 @@ export const INITIAL_REVIEWS: CustomerReview[] = [
 export const INITIAL_BUSINESSES: RentalBusiness[] = [
   {
     id: 'biz-rideout',
-    name: 'RideOut Zambales Moto Rentals',
-    slug: 'rideout-zambales',
-    tagline: 'Explore Zambales on Two Wheels · Verified Motorbike Rentals',
-    ownerName: 'Mark R. (Founder)',
+    name: 'Rideout Rentals - Zambales Depot',
+    slug: 'rideout-rentals-zambales',
+    tagline: 'Fleet Operations, Digital Inspections & Customer Reservation System',
+    ownerName: 'Mark R. (Manager)',
     email: 'rideoutzambales@gmail.com',
     mobile: '09178329900',
     location: 'San Felipe HQ, Zambales',
@@ -447,10 +447,10 @@ export const INITIAL_BUSINESSES: RentalBusiness[] = [
       status: 'active',
       trialStartDate: '2026-01-01',
       trialEndDate: '2026-01-31',
-      monthlyFee: 0, // Platform Owner
+      monthlyFee: 1000,
       isActivated: true,
-      activationCode: 'PLATFORM-MASTER-OWNER',
-      nextBillingDate: 'Lifetime (Platform Host)',
+      activationCode: 'RIDEOUT-DEPOT-ACTIVE',
+      nextBillingDate: 'Monthly Renewal',
     },
     customization: {
       depositPerMotorbike: 2000,

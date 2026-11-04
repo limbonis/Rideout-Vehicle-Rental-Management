@@ -1,0 +1,44 @@
+{
+  "id": "/",
+  "name": "Rideout Rentals - Vehicle Rental Management System",
+  "short_name": "Rideout",
+  "description": "Multi-tenant vehicle rental management system featuring online bookings, 360 inspections, fleet tracking, and depot operations.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0c0a09",
+  "theme_color": "#0c0a09",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["business", "travel", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Depot Overview",
+      "url": "/?tab=overview",
+      "description": "View live depot fleet and reservations"
+    },
+    {
+      "name": "Pickup Counter",
+      "url": "/?tab=pickups",
+      "description": "Launch vehicle pickup inspection"
+    },
+    {
+      "name": "Customer Portal",
+      "url": "/?tab=customer-portal",
+      "description": "Browse motorbikes and reserve online"
+    }
+  ]
+}

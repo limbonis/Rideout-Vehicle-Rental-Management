@@ -18,6 +18,7 @@ import { ShopBrandingView } from './components/tenant/ShopBrandingView';
 import { BusinessActivationView } from './components/tenant/BusinessActivationView';
 import { UnifiedInboxView } from './components/inbox/UnifiedInboxView';
 import { DepotSummaryReportView } from './components/analytics/DepotSummaryReportView';
+import { RideoutRentalsLandingView } from './components/landing/RideoutRentalsLandingView';
 import { Reservation } from './types';
 import { CheckCircle2, AlertCircle, Info, X, RotateCcw } from 'lucide-react';
 
@@ -51,6 +52,10 @@ function AppContent() {
 
       {/* Main Viewport Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+        {activeTab === 'landing' && (
+          <RideoutRentalsLandingView />
+        )}
+
         {activeTab === 'overview' && (
           <OverviewStats
             onOpenNewBooking={() => handleOpenBookingWithBike()}
@@ -144,26 +149,56 @@ function AppContent() {
         ))}
       </div>
 
-      {/* Clean Footer */}
-      <footer className="border-t border-stone-800 bg-stone-950/80 py-6 text-xs text-stone-500 no-print">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="font-semibold text-stone-400">RideOut Zambales Moto Rentals</span>
-            <span aria-hidden="true">·</span>
-            <span>San Felipe Depot, Zambales, Philippines</span>
-            <span aria-hidden="true">·</span>
-            <span>rideoutzambales@gmail.com</span>
+      {/* Clean Regional Footer */}
+      <footer className="border-t border-stone-800 bg-stone-950/90 py-6 text-xs text-stone-400 no-print">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-stone-800/80 pb-4">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="font-bold text-amber-400 text-sm tracking-tight">Rideout Rentals</span>
+              <span className="text-stone-600">|</span>
+              <span className="text-stone-300">Vehicle Rental Management System</span>
+              <span className="text-stone-600">·</span>
+              <span className="text-stone-400">Southeast Asia: Philippines (Default) · Thailand · Indonesia · Vietnam · Malaysia · Singapore</span>
+            </div>
+            <div className="flex items-center gap-3 text-stone-400">
+              <button 
+                onClick={() => setActiveTab('landing')}
+                className="hover:text-amber-400 transition-colors"
+              >
+                Features & Pricing
+              </button>
+              <span className="text-stone-600">·</span>
+              <button 
+                onClick={() => setActiveTab('customer-portal')}
+                className="hover:text-amber-400 transition-colors"
+              >
+                Customer Portal
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={resetDemoData}
-              className="hover:text-stone-300 transition-colors flex items-center gap-1.5"
-              title="Reset fleet, bookings and posts to original demo state"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>Reset Demo State</span>
-            </button>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-stone-500 text-[11px]">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-semibold text-stone-400">Country:</span>
+              <span className="text-stone-300">Philippines (Default)</span>
+              <span aria-hidden="true">·</span>
+              <span className="font-semibold text-stone-400">Currency:</span>
+              <span className="text-stone-300">Philippine Peso (PHP ₱)</span>
+              <span aria-hidden="true">·</span>
+              <span className="font-semibold text-stone-400">Language:</span>
+              <span className="text-stone-300">English</span>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <button
+                onClick={resetDemoData}
+                className="hover:text-stone-300 transition-colors flex items-center gap-1.5"
+                title="Reset fleet, bookings and posts to original demo state"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Reset Demo State</span>
+              </button>
+            </div>
           </div>
         </div>
       </footer>
