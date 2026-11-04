@@ -1,0 +1,6 @@
+{
+  "name": "RideOut Moto Rentals & Operations",
+  "description": "All-in-one motorbike rental management system featuring online reservations, digital vehicle pickup inspections with digital waivers, fleet management, and social media marketing studio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
