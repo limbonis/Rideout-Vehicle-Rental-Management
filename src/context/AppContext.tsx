@@ -138,7 +138,7 @@ interface AppContextType {
   extendBusinessTrial: (id: string, days: number) => void;
   registerNewBusiness: (data: {
     name: string;
-    tagline: string;
+    tagline?: string;
     ownerName: string;
     email: string;
     mobile: string;
@@ -146,6 +146,35 @@ interface AppContextType {
     facebookPageUrl?: string;
     gcashAccountName: string;
     gcashAccountNumber: string;
+    gcashQrCodeUrl?: string;
+    town?: string;
+    province?: string;
+    coordinates?: { lat: number; lng: number };
+    googleMapsPinUrl?: string;
+    targetedNearbyTowns?: string[];
+    socials?: {
+      facebook?: string;
+      instagram?: string;
+      whatsapp?: string;
+      tiktok?: string;
+    };
+    googleIntegration?: {
+      sheetsAuthorized: boolean;
+      driveAuthorized: boolean;
+      spreadsheetUrl?: string;
+      driveFolderUrl?: string;
+    };
+    firstVehicle?: {
+      name: string;
+      brand: string;
+      model: string;
+      category: any;
+      engineCc: number;
+      dailyRate: number;
+      imageUrl: string;
+      plateNumber: string;
+      registrationDocs?: any;
+    };
   }) => string;
   isPlatformAdmin: boolean;
 
@@ -864,7 +893,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const registerNewBusiness = (data: {
     name: string;
-    tagline: string;
+    tagline?: string;
     ownerName: string;
     email: string;
     mobile: string;
@@ -872,6 +901,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     facebookPageUrl?: string;
     gcashAccountName: string;
     gcashAccountNumber: string;
+    gcashQrCodeUrl?: string;
+    town?: string;
+    province?: string;
+    coordinates?: { lat: number; lng: number };
+    googleMapsPinUrl?: string;
+    targetedNearbyTowns?: string[];
+    socials?: {
+      facebook?: string;
+      instagram?: string;
+      whatsapp?: string;
+      tiktok?: string;
+    };
+    googleIntegration?: {
+      sheetsAuthorized: boolean;
+      driveAuthorized: boolean;
+      spreadsheetUrl?: string;
+      driveFolderUrl?: string;
+    };
+    firstVehicle?: {
+      name: string;
+      brand: string;
+      model: string;
+      category: any;
+      engineCc: number;
+      dailyRate: number;
+      imageUrl: string;
+      plateNumber: string;
+      registrationDocs?: any;
+    };
   }): string => {
     const id = `biz-${Date.now()}`;
     const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -888,12 +946,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       email: data.email,
       mobile: data.mobile,
       location: data.location,
+      town: data.town || 'San Felipe',
+      province: data.province || 'Zambales',
+      coordinates: data.coordinates || { lat: 15.0683, lng: 120.0601 },
+      googleMapsPinUrl: data.googleMapsPinUrl || '',
       logoUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=200&auto=format&fit=crop&q=80',
       coverPhotoUrl: '/src/assets/images/hero_coastal_ride_1793338340532.jpg',
       primaryColor: '#f59e0b',
       isFlagship: false,
-      facebookBranding: data.facebookPageUrl ? {
-        pageUrl: data.facebookPageUrl,
+      socials: data.socials,
+      googleIntegration: data.googleIntegration ? {
+        isConnected: Boolean(data.googleIntegration.sheetsAuthorized || data.googleIntegration.driveAuthorized),
+        email: data.email,
+        spreadsheetUrl: data.googleIntegration.spreadsheetUrl || `https://docs.google.com/spreadsheets/d/mock-${id}`,
+        driveFolderUrl: data.googleIntegration.driveFolderUrl || `https://drive.google.com/drive/folders/mock-${id}`,
+        lastSyncedAt: today.toISOString(),
+        syncedRowCount: 0,
+      } : undefined,
+      facebookBranding: data.facebookPageUrl || data.socials?.facebook ? {
+        pageUrl: data.facebookPageUrl || data.socials?.facebook || '',
         pageName: data.name,
         pageCategory: 'Motorcycle Rental',
         followersCount: 1500,
@@ -903,7 +974,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       gcashConfig: {
         accountName: data.gcashAccountName || data.name.toUpperCase(),
         accountNumber: data.gcashAccountNumber || data.mobile,
-        qrCodeUrl: '',
+        qrCodeUrl: data.gcashQrCodeUrl || '',
         depositAmount: 1000,
         instructions: `Send ₱1,000 reservation deposit to ${data.gcashAccountName} via GCash.`,
       },
@@ -921,6 +992,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         fuelChargePerBar: 100,
         extensionFeePerHour: 150,
         fuelMaxBars: 8,
+        targetedNearbyTowns: data.targetedNearbyTowns || ['San Antonio', 'Cabangan', 'San Narciso'],
+        operatingTown: data.town || 'San Felipe',
         addOns: [
           { id: `addon-${Date.now()}-1`, name: '2nd Passenger Helmet', price: 100, isActive: true, description: 'DOT certified clean passenger helmet' },
           { id: `addon-${Date.now()}-2`, name: 'Riding Raincoats (Pair)', price: 0, isActive: true, description: 'Free waterproof ponchos upon request' },
@@ -931,6 +1004,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     setBusinesses((prev) => [...prev, newBiz]);
+
+    // If first vehicle was configured in the onboarding wizard, add it to fleet inventory
+    if (data.firstVehicle) {
+      const initialBike: Motorbike = {
+        id: `bike-${Date.now()}`,
+        name: data.firstVehicle.name || 'Honda Click 125i',
+        brand: data.firstVehicle.brand || 'Honda',
+        model: data.firstVehicle.model || 'Click 125i',
+        category: data.firstVehicle.category || 'scooter',
+        engineCc: data.firstVehicle.engineCc || 125,
+        plateNumber: data.firstVehicle.plateNumber || 'NB 8492',
+        dailyRate: data.firstVehicle.dailyRate || 500,
+        weeklyRate: (data.firstVehicle.dailyRate || 500) * 6,
+        currentMileage: 2800,
+        nextServiceMileage: 4000,
+        fuelLevel: 100,
+        status: 'available',
+        imageUrl: data.firstVehicle.imageUrl || '/src/assets/images/bike_urban_scooter_1793338342006.jpg',
+        features: ['LED Headlight', 'Under-seat Helmet Storage', 'LTO Registered', 'USB Charger'],
+        helmetCapacity: 1,
+        transmission: 'Automatic (CVT)',
+        businessId: id,
+        registrationDocs: data.firstVehicle.registrationDocs,
+      };
+      setBikes((prev) => [initialBike, ...prev]);
+    }
+
     setCurrentBusinessId(id);
 
     const authData: AuthUser = {
@@ -943,7 +1043,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem('rideout_auth_user_v2', JSON.stringify(authData));
     setActiveTabState('overview');
 
-    showToast(`Welcome ${newBiz.name}! 30-day free trial activated (₱1,000/mo thereafter).`, 'success');
+    showToast(`Welcome ${newBiz.name}! 30-day free trial activated and depot console unlocked!`, 'success');
     return id;
   };
 

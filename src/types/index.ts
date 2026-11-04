@@ -25,6 +25,7 @@ export interface Motorbike {
   helmetCapacity: number;
   transmission: 'Automatic (CVT)' | 'Manual (Clutch)' | 'Semi-Automatic';
   businessId?: string;
+  registrationDocs?: MotorbikeRegistrationDocs;
 }
 
 export type ReservationStatus = 
@@ -437,6 +438,17 @@ export interface RentalBusiness {
   staffUsers?: StaffUser[];
   createdAt: string;
   isFlagship?: boolean; // Flagship / Platform owner (RideOut Zambales)
+  town?: string;
+  province?: string;
+  coordinates?: { lat: number; lng: number };
+  googleMapsPinUrl?: string;
+  socials?: {
+    facebook?: string;
+    instagram?: string;
+    whatsapp?: string;
+    tiktok?: string;
+  };
+  googleIntegration?: GoogleAccountIntegration;
 }
 
 export interface PickupLocationContactStaff {
