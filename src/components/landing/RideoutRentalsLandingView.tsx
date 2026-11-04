@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { GoogleOAuthSubscribeModal } from '../auth/GoogleOAuthSubscribeModal';
 import { PWAInstallModal } from '../pwa/PWAInstallModal';
 import { 
   formatPrice, 
@@ -34,7 +33,10 @@ import {
   Check,
   Camera,
   Signature,
-  FileCheck
+  FileCheck,
+  KeyRound,
+  LogIn,
+  LogOut
 } from 'lucide-react';
 
 export const RideoutRentalsLandingView: React.FC = () => {
@@ -45,10 +47,12 @@ export const RideoutRentalsLandingView: React.FC = () => {
     setCurrency,
     language,
     setLanguage,
-    showToast 
+    showToast,
+    currentUser,
+    openAuthModal,
+    logoutUser
   } = useApp();
 
-  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
   const [isPwaModalOpen, setIsPwaModalOpen] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState<string>('PH'); // Default Philippines
 
@@ -169,6 +173,41 @@ export const RideoutRentalsLandingView: React.FC = () => {
               </select>
             </div>
 
+            {/* Auth / Depot Console Access */}
+            {currentUser ? (
+              <div className="flex items-center gap-1.5 bg-stone-950 border border-emerald-500/30 rounded-lg px-2.5 py-1 text-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+                <span className="text-stone-300 font-mono text-[11px] truncate max-w-[120px] hidden sm:inline" title={currentUser.email}>
+                  {currentUser.email}
+                </span>
+                <button
+                  onClick={() => setActiveTab('overview')}
+                  className="px-2 py-0.5 rounded bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold text-[11px] transition-colors flex items-center gap-1"
+                >
+                  <span>Depot Console</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => openAuthModal('login')}
+                  className="px-2.5 py-1 rounded-lg bg-stone-950 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-white text-xs font-semibold transition-colors flex items-center gap-1"
+                  title="Sign In with Google OAuth"
+                >
+                  <KeyRound className="w-3 h-3 text-amber-400" />
+                  <span>Sign In</span>
+                </button>
+                <button
+                  onClick={() => openAuthModal('signup')}
+                  className="px-2.5 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-stone-950 text-xs font-bold transition-colors flex items-center gap-1 shadow-sm"
+                  title="Subscribe & Start 30-Day Free Trial"
+                >
+                  <Sparkles className="w-3 h-3" />
+                  <span>Try 30d Free</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -210,7 +249,7 @@ export const RideoutRentalsLandingView: React.FC = () => {
             {/* CTA Buttons */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
-                onClick={() => setIsGoogleModalOpen(true)}
+                onClick={() => openAuthModal('signup')}
                 className="px-6 py-3.5 text-sm font-bold text-stone-950 bg-amber-400 hover:bg-amber-300 rounded-xl shadow-lg shadow-amber-500/25 flex items-center gap-2 transition-all transform hover:-translate-y-0.5"
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" className="shrink-0 bg-white p-0.5 rounded-full">
@@ -222,6 +261,25 @@ export const RideoutRentalsLandingView: React.FC = () => {
                 <span>Subscribe & Try Free with Google</span>
                 <ArrowRight className="w-4 h-4 ml-1" />
               </button>
+
+              {currentUser ? (
+                <button
+                  onClick={() => setActiveTab('overview')}
+                  className="px-5 py-3.5 text-sm font-bold text-stone-950 bg-emerald-400 hover:bg-emerald-300 rounded-xl transition-all flex items-center gap-2 shadow-sm"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-stone-950" />
+                  <span>Open Depot Console</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => openAuthModal('login')}
+                  className="px-5 py-3.5 text-sm font-semibold text-stone-200 hover:text-white bg-stone-900/90 hover:bg-stone-800 border border-stone-700/80 rounded-xl transition-all flex items-center gap-2 shadow-sm"
+                >
+                  <KeyRound className="w-4 h-4 text-amber-400" />
+                  <span>Sign In with Gmail</span>
+                </button>
+              )}
 
               <button
                 onClick={() => setIsPwaModalOpen(true)}
@@ -638,7 +696,7 @@ export const RideoutRentalsLandingView: React.FC = () => {
               </p>
             </div>
             <button
-              onClick={() => setIsGoogleModalOpen(true)}
+              onClick={() => openAuthModal('signup')}
               className="w-full py-2 bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold rounded-lg transition-colors text-center"
             >
               Start Free Trial
@@ -722,14 +780,6 @@ export const RideoutRentalsLandingView: React.FC = () => {
           <span>Install Standalone App</span>
         </button>
       </div>
-
-      {/* Google OAuth Modal */}
-      {isGoogleModalOpen && (
-        <GoogleOAuthSubscribeModal
-          isOpen={isGoogleModalOpen}
-          onClose={() => setIsGoogleModalOpen(false)}
-        />
-      )}
 
       {/* PWA Download Modal */}
       {isPwaModalOpen && (

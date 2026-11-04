@@ -60,6 +60,13 @@ export interface PromoValidationResult {
   promo?: PromoCode;
 }
 
+export interface AuthUser {
+  email: string;
+  businessId?: string;
+  businessName?: string;
+  hasActiveSubscription: boolean;
+}
+
 interface AppContextType {
   activeTab: NavigationTab;
   setActiveTab: (tab: NavigationTab) => void;
@@ -72,6 +79,20 @@ interface AppContextType {
   toasts: Toast[];
   showToast: (message: string, type?: 'success' | 'info' | 'warning' | 'error') => void;
   removeToast: (id: string) => void;
+  
+  // User Authentication & Active Subscription Verification
+  currentUser: AuthUser | null;
+  loginWithGoogleEmail: (email: string) => { 
+    success: boolean; 
+    hasActiveSubscription: boolean; 
+    business?: RentalBusiness; 
+    error?: string; 
+  };
+  logoutUser: () => void;
+  isAuthModalOpen: boolean;
+  setIsAuthModalOpen: (open: boolean) => void;
+  authModalInitialMode: 'login' | 'signup';
+  openAuthModal: (initialMode?: 'login' | 'signup') => void;
   
   // Bike Operations
   updateBikeStatus: (bikeId: string, status: BikeStatus) => void;
@@ -210,9 +231,38 @@ const STORAGE_KEYS = {
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [activeTab, setActiveTab] = useState<NavigationTab>('landing');
+  const [activeTab, setActiveTabState] = useState<NavigationTab>('landing');
   const [selectedReservationForPickup, setSelectedReservationForPickup] = useState<Reservation | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
+
+  // User Authentication & Active Subscription Verification State
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
+    try {
+      const saved = localStorage.getItem('rideout_auth_user_v2');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalInitialMode, setAuthModalInitialMode] = useState<'login' | 'signup'>('login');
+
+  const openAuthModal = (initialMode: 'login' | 'signup' = 'login') => {
+    setAuthModalInitialMode(initialMode);
+    setIsAuthModalOpen(true);
+  };
+
+  const setActiveTab = (tab: NavigationTab) => {
+    // If attempting to open depot operations tabs without being authenticated, prompt auth modal
+    const isPublicTab = tab === 'landing' || tab === 'customer-portal';
+    if (!isPublicTab && !currentUser) {
+      openAuthModal('login');
+      showToast('Please sign in with your authorized Gmail account to access the depot console.', 'info');
+      return;
+    }
+    setActiveTabState(tab);
+  };
 
   const [bikes, setBikes] = useState<Motorbike[]>(() => {
     try {
@@ -882,8 +932,83 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setBusinesses((prev) => [...prev, newBiz]);
     setCurrentBusinessId(id);
+
+    const authData: AuthUser = {
+      email: data.email.trim().toLowerCase(),
+      businessId: id,
+      businessName: newBiz.name,
+      hasActiveSubscription: true,
+    };
+    setCurrentUser(authData);
+    localStorage.setItem('rideout_auth_user_v2', JSON.stringify(authData));
+    setActiveTabState('overview');
+
     showToast(`Welcome ${newBiz.name}! 30-day free trial activated (₱1,000/mo thereafter).`, 'success');
     return id;
+  };
+
+  const loginWithGoogleEmail = (email: string) => {
+    const normalized = email.trim().toLowerCase();
+
+    // Find business depot
+    let matchedBiz = businesses.find((b) => b.email.toLowerCase() === normalized);
+
+    // Fallback mapping for predefined demo accounts
+    if (!matchedBiz) {
+      if (normalized === 'rideoutzambales@gmail.com' || normalized === 'jibmaxatnewroad@gmail.com') {
+        matchedBiz = businesses.find((b) => b.id === 'biz-rideout') || businesses[0];
+      }
+    }
+
+    if (!matchedBiz) {
+      return {
+        success: false,
+        hasActiveSubscription: false,
+        error: `No registered Rideout Rentals depot found for "${normalized}". Please sign up for a 30-day free trial below.`
+      };
+    }
+
+    // Verify subscription status
+    const sub = matchedBiz.subscription;
+    const isTrialActive = sub.status === 'trial' && (!sub.trialEndDate || new Date(sub.trialEndDate) >= new Date());
+    const isPaidActive = sub.status === 'active';
+    const hasActiveSub = Boolean(isPaidActive || isTrialActive);
+
+    if (!hasActiveSub) {
+      return {
+        success: false,
+        hasActiveSubscription: false,
+        business: matchedBiz,
+        error: `Subscription inactive or expired for "${normalized}". Please choose a plan or restart your free trial to access the depot console.`
+      };
+    }
+
+    // Active subscription verified! Open depot console
+    const authData: AuthUser = {
+      email: normalized,
+      businessId: matchedBiz.id,
+      businessName: matchedBiz.name,
+      hasActiveSubscription: true,
+    };
+
+    setCurrentUser(authData);
+    localStorage.setItem('rideout_auth_user_v2', JSON.stringify(authData));
+    setCurrentBusinessId(matchedBiz.id);
+    setActiveTabState('overview');
+    showToast(`Welcome back, ${matchedBiz.name}! Active subscription verified.`, 'success');
+
+    return {
+      success: true,
+      hasActiveSubscription: true,
+      business: matchedBiz
+    };
+  };
+
+  const logoutUser = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('rideout_auth_user_v2');
+    setActiveTabState('landing');
+    showToast('Signed out of Rideout Rentals.', 'info');
   };
 
   const addNominatedPickupLocation = (businessId: string, location: PickupLocation) => {
@@ -1260,6 +1385,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       value={{
         activeTab,
         setActiveTab,
+        currentUser,
+        loginWithGoogleEmail,
+        logoutUser,
+        isAuthModalOpen,
+        setIsAuthModalOpen,
+        authModalInitialMode,
+        openAuthModal,
         bikes,
         reservations,
         inspections,

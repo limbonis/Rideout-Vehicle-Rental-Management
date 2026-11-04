@@ -1,6 +1,6 @@
 {
   "name": "Rideout Rentals",
-  "description": "Multi-tenant vehicle rental management system and operations platform featuring depot inspections, fleet management, and public booking portal.",
+  "description": "Vehicle rental management system and operations platform featuring depot inspections, fleet management, smart dynamic pricing, and public booking portal.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
