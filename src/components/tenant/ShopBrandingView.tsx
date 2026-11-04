@@ -61,6 +61,8 @@ import {
   calculateSmartPriceDiscount 
 } from '../../types/smartPricing';
 import { getNearbyTownsForLocation, NearbyTown } from '../../utils/nearbyTownsHelper';
+import { FacebookConnectModal } from './FacebookConnectModal';
+import { GCashPaymentModal } from '../common/GCashPaymentModal';
 
 export const ShopBrandingView: React.FC = () => {
   const { 
@@ -95,9 +97,11 @@ export const ShopBrandingView: React.FC = () => {
   const [coverPhotoUrl, setCoverPhotoUrl] = useState(currentBusiness.coverPhotoUrl);
   const [primaryColor, setPrimaryColor] = useState(currentBusiness.primaryColor || '#f59e0b');
 
-  // Facebook Import State
+  // Facebook Import & Direct Connect State
   const [fbPageUrl, setFbPageUrl] = useState(currentBusiness.facebookBranding?.pageUrl || 'https://facebook.com/rideoutzambales');
   const [isImportingFb, setIsImportingFb] = useState(false);
+  const [isFbConnectModalOpen, setIsFbConnectModalOpen] = useState(false);
+  const [isGCashModalOpen, setIsGCashModalOpen] = useState(false);
 
   // GCash Configuration State
   const [gcashAccountName, setGcashAccountName] = useState(currentBusiness.gcashConfig.accountName);
@@ -351,12 +355,12 @@ export const ShopBrandingView: React.FC = () => {
     }
     setIsImportingFb(true);
     try {
-      await importBrandingFromFacebook(currentBusiness.id, fbPageUrl);
-      // Refresh local inputs with imported values
-      const updated = currentBusiness;
-      setName(updated.name);
-      setLogoUrl(updated.logoUrl);
-      setCoverPhotoUrl(updated.coverPhotoUrl);
+      const result = await importBrandingFromFacebook(currentBusiness.id, fbPageUrl);
+      if (result) {
+        setName(result.name);
+        setLogoUrl(result.logoUrl);
+        setCoverPhotoUrl(result.coverPhotoUrl);
+      }
     } finally {
       setIsImportingFb(false);
     }
@@ -529,56 +533,119 @@ export const ShopBrandingView: React.FC = () => {
         {/* Left Column: Customization Forms (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           
-          {/* Section 1: Facebook Page Link & Auto-Branding */}
-          <div className="p-5 rounded-xl border border-blue-500/30 bg-gradient-to-b from-blue-950/30 to-stone-900 shadow-sm space-y-4">
+          {/* Section 1: Facebook Page Integration & Direct Sign In */}
+          <div className="p-5 rounded-2xl border border-blue-500/30 bg-gradient-to-b from-blue-950/30 via-stone-900 to-stone-900 shadow-md space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-wider">
                 <Facebook className="w-4 h-4 fill-current" />
-                <span>1. Link Facebook Page (Auto-Branding Importer)</span>
+                <span>1. Facebook Page Integration & Messenger Sync</span>
               </div>
-              <span className="text-[10px] text-blue-300 font-medium bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
-                1-Click Sync
+              <span className="text-[10px] text-blue-300 font-semibold bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Live Meta Sync</span>
               </span>
             </div>
 
             <p className="text-xs text-stone-300 leading-relaxed">
-              Paste your business Facebook Page link. We automatically pull your official <strong className="text-white">logo</strong>, high-resolution <strong className="text-white">cover photo banner</strong>, and shop bio so your portal matches your social media presence.
+              Sign in with Facebook or link your Page URL to pull your verified <strong className="text-white">logo</strong>, high-res <strong className="text-white">cover photo</strong>, and link the Page's Messenger inbox directly to your <strong className="text-white">Unified Social Inbox</strong>.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative flex-1">
-                <Link2 className="w-4 h-4 text-stone-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="url"
-                  value={fbPageUrl}
-                  onChange={(e) => setFbPageUrl(e.target.value)}
-                  placeholder="https://facebook.com/yourrentalshop"
-                  className="w-full pl-9 pr-3 py-2 bg-stone-950 border border-stone-800 focus:border-blue-400 rounded-lg text-stone-100 text-xs font-mono"
-                />
+            {/* Direct "Sign in & Connect with Facebook" Callout */}
+            <div className="p-3.5 rounded-xl bg-blue-950/50 border border-blue-500/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="space-y-0.5">
+                <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <Facebook className="w-3.5 h-3.5 fill-current text-blue-400" />
+                  <span>Interactive Facebook Page OAuth</span>
+                </div>
+                <p className="text-[11px] text-blue-200/80">
+                  Authorizes Messenger inbox sync, page logo, and cover photo in 1 step.
+                </p>
               </div>
+
               <button
                 type="button"
-                onClick={handleFetchFacebook}
-                disabled={isImportingFb}
-                className="px-4 py-2 text-xs font-semibold text-white bg-[#1877F2] hover:bg-[#166fe5] disabled:opacity-50 rounded-lg shadow-sm flex items-center justify-center gap-2 whitespace-nowrap"
+                onClick={() => setIsFbConnectModalOpen(true)}
+                className="px-4 py-2.5 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5 shrink-0"
               >
-                {isImportingFb ? (
-                  <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    <span>Extracting Branding...</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Fetch & Apply FB Branding</span>
-                  </>
-                )}
+                <Facebook className="w-3.5 h-3.5 fill-current" />
+                <span>Connect with Facebook</span>
+                <ExternalLink className="w-3 h-3 opacity-80" />
               </button>
+            </div>
+
+            {/* Connected Facebook Page Status Card */}
+            {currentBusiness.facebookBranding && (
+              <div className="p-3 rounded-xl bg-stone-950 border border-stone-800 flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <img
+                    src={logoUrl || currentBusiness.facebookBranding.pageUrl}
+                    alt=""
+                    className="w-9 h-9 rounded-lg object-cover border border-stone-700 shrink-0"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/assets/images/bike_urban_scooter_1793338342006.jpg';
+                    }}
+                  />
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-stone-100 truncate">
+                        {currentBusiness.facebookBranding.pageName}
+                      </span>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                    </div>
+                    <span className="text-[10px] text-stone-400 block truncate">
+                      {currentBusiness.facebookBranding.followersCount?.toLocaleString()} followers · {currentBusiness.facebookBranding.pageCategory || 'Motorcycle Rental'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                    Inbox Synced
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Manual URL Input Option */}
+            <div className="space-y-1.5 pt-1">
+              <label className="text-[11px] text-stone-400 font-medium block">
+                Or enter Facebook Page URL manually:
+              </label>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="relative flex-1">
+                  <Link2 className="w-4 h-4 text-stone-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="url"
+                    value={fbPageUrl}
+                    onChange={(e) => setFbPageUrl(e.target.value)}
+                    placeholder="https://facebook.com/yourrentalshop"
+                    className="w-full pl-9 pr-3 py-2 bg-stone-950 border border-stone-800 focus:border-blue-400 rounded-lg text-stone-100 text-xs font-mono"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleFetchFacebook}
+                  disabled={isImportingFb}
+                  className="px-4 py-2 text-xs font-semibold text-white bg-stone-800 hover:bg-stone-700 disabled:opacity-50 rounded-lg border border-stone-700 flex items-center justify-center gap-2 whitespace-nowrap shadow-sm"
+                >
+                  {isImportingFb ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Extracting Branding...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                      <span>Fetch & Apply FB Branding</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Quick Demo Presets */}
             <div className="pt-2 border-t border-blue-500/20 space-y-1.5">
-              <span className="text-[10px] text-stone-400 uppercase font-semibold">Try sample Philippine rental shops:</span>
+              <span className="text-[10px] text-stone-400 uppercase font-semibold">Quick test with sample Philippine rental depots:</span>
               <div className="flex flex-wrap gap-2">
                 {[
                   { label: 'Liwliwa Surf & Moto', url: 'https://facebook.com/liwliwasurfrentals' },
@@ -591,11 +658,12 @@ export const ShopBrandingView: React.FC = () => {
                     type="button"
                     onClick={() => {
                       setFbPageUrl(preset.url);
-                      importBrandingFromFacebook(currentBusiness.id, preset.url).then(() => {
-                        const b = currentBusiness;
-                        setName(b.name);
-                        setLogoUrl(b.logoUrl);
-                        setCoverPhotoUrl(b.coverPhotoUrl);
+                      importBrandingFromFacebook(currentBusiness.id, preset.url).then((res) => {
+                        if (res) {
+                          setName(res.name);
+                          setLogoUrl(res.logoUrl);
+                          setCoverPhotoUrl(res.coverPhotoUrl);
+                        }
                       });
                     }}
                     className="text-[11px] px-2 py-1 rounded bg-stone-900 border border-stone-800 hover:border-blue-400 text-stone-300 hover:text-white transition-colors"
@@ -2576,10 +2644,11 @@ export const ShopBrandingView: React.FC = () => {
 
                   <button
                     type="button"
-                    className="w-full py-2 bg-[#005CE6] text-white font-bold rounded-lg text-xs flex items-center justify-center gap-1.5 shadow"
+                    onClick={() => setIsGCashModalOpen(true)}
+                    className="w-full py-2.5 bg-[#005CE6] hover:bg-[#004dc2] text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all"
                   >
                     <Smartphone className="w-3.5 h-3.5" />
-                    <span>Open GCash App (Demo)</span>
+                    <span>Open GCash App</span>
                   </button>
                 </div>
               )}
@@ -2636,6 +2705,34 @@ export const ShopBrandingView: React.FC = () => {
           onClose={() => setIsLocationModalOpen(false)}
         />
       )}
+
+      {/* Interactive Facebook OAuth & Page Connection Modal */}
+      <FacebookConnectModal
+        isOpen={isFbConnectModalOpen}
+        onClose={() => setIsFbConnectModalOpen(false)}
+        currentFbUrl={fbPageUrl}
+        onConnected={(data) => {
+          setName(data.name);
+          setLogoUrl(data.logoUrl);
+          setCoverPhotoUrl(data.coverPhotoUrl);
+        }}
+      />
+
+      {/* Interactive GCash Quick Pay & Scan-to-Pay Modal */}
+      <GCashPaymentModal
+        isOpen={isGCashModalOpen}
+        onClose={() => setIsGCashModalOpen(false)}
+        gcashConfig={{
+          accountName: gcashAccountName || name,
+          accountNumber: gcashAccountNumber || mobile,
+          qrCodeUrl: gcashQrUrl,
+          depositAmount: gcashDepositAmount,
+          instructions: `Send ₱${gcashDepositAmount.toLocaleString()} reservation deposit to ${gcashAccountName} via GCash.`,
+        }}
+        amount={gcashDepositAmount}
+        label="Depot Reservation Deposit"
+        showToast={showToast}
+      />
     </div>
   );
 };

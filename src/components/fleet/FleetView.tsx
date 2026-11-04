@@ -14,30 +14,20 @@ import {
   Search
 } from 'lucide-react';
 import { MotorbikePhotoStudioModal } from './MotorbikePhotoStudioModal';
+import { AddMotorbikeModal } from './AddMotorbikeModal';
 
 interface FleetViewProps {
   onOpenNewBookingWithBike: (bikeId: string) => void;
 }
 
 export const FleetView: React.FC<FleetViewProps> = ({ onOpenNewBookingWithBike }) => {
-  const { bikes, updateBikeStatus, addBike, updateBikePhoto, showToast } = useApp();
+  const { bikes, updateBikeStatus, updateBikePhoto, showToast } = useApp();
 
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [studioBike, setStudioBike] = useState<Motorbike | null>(null);
-
-  // New bike form state
-  const [name, setName] = useState('');
-  const [brand, setBrand] = useState('Yamaha');
-  const [model, setModel] = useState('');
-  const [category, setCategory] = useState<BikeCategory>('scooter');
-  const [engineCc, setEngineCc] = useState(155);
-  const [plateNumber, setPlateNumber] = useState('');
-  const [dailyRate, setDailyRate] = useState(850);
-  const [currentMileage, setCurrentMileage] = useState(1200);
-  const [transmission, setTransmission] = useState<'Automatic (CVT)' | 'Manual (Clutch)' | 'Semi-Automatic'>('Automatic (CVT)');
 
   const filteredBikes = bikes.filter((b) => {
     const matchesCategory = categoryFilter === 'all' || b.category === categoryFilter;
@@ -48,41 +38,6 @@ export const FleetView: React.FC<FleetViewProps> = ({ onOpenNewBookingWithBike }
       b.brand.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesStatus && matchesSearch;
   });
-
-  const handleAddBike = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim() || !plateNumber.trim()) {
-      alert('Please fill in bike model name and plate number');
-      return;
-    }
-
-    addBike({
-      name,
-      brand,
-      model: model || name,
-      category,
-      engineCc,
-      plateNumber,
-      dailyRate,
-      weeklyRate: Math.round(dailyRate * 6),
-      currentMileage,
-      nextServiceMileage: currentMileage + 1500,
-      fuelLevel: 100,
-      status: 'available',
-      imageUrl: category === 'adventure' 
-        ? '/assets/images/bike_adventure_dual_1793338342581.jpg' 
-        : (category === 'maxi-scooter' 
-          ? '/assets/images/bike_touring_scooter_1793338342942.jpg' 
-          : '/assets/images/bike_urban_scooter_1793338342006.jpg'),
-      features: ['Underseat Helmet Space', 'Dual Rear Shocks', 'Fuel Efficient Engine'],
-      helmetCapacity: 1,
-      transmission,
-    });
-
-    setIsAddModalOpen(false);
-    setName('');
-    setPlateNumber('');
-  };
 
   const getStatusColor = (status: BikeStatus) => {
     switch (status) {
@@ -307,126 +262,12 @@ export const FleetView: React.FC<FleetViewProps> = ({ onOpenNewBookingWithBike }
         })}
       </div>
 
-      {/* Add Motorbike Modal */}
+      {/* Add Motorbike Multi-Step Modal (CR Upload -> Specs -> 4 Photos -> AI Studio) */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-lg bg-stone-900 border border-stone-800 rounded-xl shadow-2xl overflow-hidden my-8">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-stone-800 bg-stone-950">
-              <h2 className="text-base font-bold text-stone-100">Add Motorbike to Fleet</h2>
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="p-1.5 text-stone-400 hover:text-white rounded-md"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleAddBike} className="p-6 space-y-4 text-xs">
-              <div>
-                <label className="block text-stone-400 mb-1">Make & Model *</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Yamaha NMAX 155 ABS"
-                  className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-stone-100 text-xs"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-stone-400 mb-1">Category</label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value as BikeCategory)}
-                    className="w-full px-2.5 py-2 bg-stone-950 border border-stone-800 rounded-lg text-stone-100 text-xs"
-                  >
-                    <option value="scooter">Scooter (125-155cc)</option>
-                    <option value="maxi-scooter">Maxi-Scooter (Touring)</option>
-                    <option value="adventure">Adventure / Dual-Sport</option>
-                    <option value="classic">Classic / Cafe Racer</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-stone-400 mb-1">Engine CC</label>
-                  <input
-                    type="number"
-                    value={engineCc}
-                    onChange={(e) => setEngineCc(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-stone-100 text-xs font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-stone-400 mb-1">Plate Number *</label>
-                  <input
-                    type="text"
-                    required
-                    value={plateNumber}
-                    onChange={(e) => setPlateNumber(e.target.value)}
-                    placeholder="ZA-1234"
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-stone-100 text-xs font-mono uppercase"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-stone-400 mb-1">Daily Rental Rate (₱)</label>
-                  <input
-                    type="number"
-                    value={dailyRate}
-                    onChange={(e) => setDailyRate(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-stone-100 text-xs font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-stone-400 mb-1">Current Mileage (km)</label>
-                  <input
-                    type="number"
-                    value={currentMileage}
-                    onChange={(e) => setCurrentMileage(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-stone-950 border border-stone-800 rounded-lg text-stone-100 text-xs font-mono"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-stone-400 mb-1">Transmission</label>
-                  <select
-                    value={transmission}
-                    onChange={(e) => setTransmission(e.target.value as any)}
-                    className="w-full px-2.5 py-2 bg-stone-950 border border-stone-800 rounded-lg text-stone-100 text-xs"
-                  >
-                    <option value="Automatic (CVT)">Automatic (CVT)</option>
-                    <option value="Manual (Clutch)">Manual (Clutch)</option>
-                    <option value="Semi-Automatic">Semi-Automatic</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="pt-4 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 text-xs font-medium text-stone-400 hover:text-white"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 text-xs font-semibold text-stone-950 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm"
-                >
-                  Save Motorbike
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <AddMotorbikeModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+        />
       )}
 
       {/* AI Motorbike Photo Studio Modal */}

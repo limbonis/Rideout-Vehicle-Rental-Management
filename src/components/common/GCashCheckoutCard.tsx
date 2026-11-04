@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GCashPaymentConfig } from '../../types';
 import { generateGCashQRSvg, openGCashMobileApp } from '../../utils/gcashHelper';
+import { GCashPaymentModal } from './GCashPaymentModal';
 import { 
   SAMPLE_PAYMENT_CONFIRMATIONS, 
   SamplePaymentSlip 
@@ -60,6 +61,7 @@ export const GCashCheckoutCard: React.FC<GCashCheckoutCardProps> = ({
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isZoomedQR, setIsZoomedQR] = useState(false);
   const [isZoomedProof, setIsZoomedProof] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [localCustomQR, setLocalCustomQR] = useState<string | null>(null);
   
   // Local payment source tab
@@ -83,6 +85,7 @@ export const GCashCheckoutCard: React.FC<GCashCheckoutCardProps> = ({
   };
 
   const handleOpenGCash = () => {
+    setIsPaymentModalOpen(true);
     openGCashMobileApp({
       accountNumber: gcashConfig.accountNumber,
       amount,
@@ -561,6 +564,21 @@ export const GCashCheckoutCard: React.FC<GCashCheckoutCardProps> = ({
           </div>
         </div>
       )}
+
+      {/* Interactive GCash Quick Pay & Scan-to-Pay Modal */}
+      <GCashPaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        gcashConfig={gcashConfig}
+        amount={amount}
+        label={label}
+        bookingRef={bookingRef}
+        onProofUploaded={(url, ref) => {
+          onPaymentProofChange?.(url);
+          if (ref) onReferenceNumberChange(ref);
+        }}
+        showToast={showToast}
+      />
     </div>
   );
 };

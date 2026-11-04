@@ -18,7 +18,8 @@ import {
   ContentRewardConfig,
   ProximityAlertEvent,
   SmartPricingConfig,
-  SocialChatThread
+  SocialChatThread,
+  FacebookPageBranding
 } from '../types';
 import { 
   INITIAL_BIKES, 
@@ -132,8 +133,25 @@ interface AppContextType {
   setCurrentBusinessId: (id: string) => void;
   updateBusinessProfile: (id: string, updates: Partial<RentalBusiness>) => void;
   updateBusinessCustomization: (id: string, customization: Partial<BusinessCustomization>) => void;
+  importBrandingFromFacebook: (
+    id: string, 
+    fbPageUrl: string, 
+    options?: { 
+      isConnected?: boolean; 
+      inboxSynced?: boolean; 
+      pageId?: string;
+      customCoverUrl?: string;
+      customLogoUrl?: string;
+      pageName?: string;
+    }
+  ) => Promise<{
+    success: boolean;
+    name: string;
+    logoUrl: string;
+    coverPhotoUrl: string;
+    branding: FacebookPageBranding;
+  } | null>;
   markReturnReminderSent: (reservationId: string) => void;
-  importBrandingFromFacebook: (id: string, fbPageUrl: string) => Promise<boolean>;
   activateBusiness: (id: string) => void;
   extendBusinessTrial: (id: string, days: number) => void;
   registerNewBusiness: (data: {
@@ -772,50 +790,99 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('1-hour return reminder logged as sent to renter!', 'success');
   };
 
-  const importBrandingFromFacebook = async (id: string, fbPageUrl: string): Promise<boolean> => {
+  const importBrandingFromFacebook = async (
+    id: string, 
+    fbPageUrl: string,
+    options?: {
+      isConnected?: boolean;
+      inboxSynced?: boolean;
+      pageId?: string;
+      customCoverUrl?: string;
+      customLogoUrl?: string;
+      pageName?: string;
+    }
+  ): Promise<{
+    success: boolean;
+    name: string;
+    logoUrl: string;
+    coverPhotoUrl: string;
+    branding: FacebookPageBranding;
+  } | null> => {
     const cleanUrl = fbPageUrl.trim().toLowerCase();
-    let importedName = '';
-    let importedLogo = '';
-    let importedCover = '';
+    let importedName = options?.pageName || '';
+    let importedLogo = options?.customLogoUrl || '';
+    let importedCover = options?.customCoverUrl || '';
     let category = 'Motorcycle Rental & Tours';
     let about = '';
     let followers = 6800;
 
-    if (cleanUrl.includes('liwliwa')) {
-      importedName = 'Liwliwa Surf & Moto Rentals';
-      importedLogo = 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=200&auto=format&fit=crop&q=80';
-      importedCover = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80';
-      category = 'Surf Town Bike Rental';
-      about = 'Beach cruiser scooters with surf racks in Liwliwa, San Felipe.';
-      followers = 9200;
-    } else if (cleanUrl.includes('elyu') || cleanUrl.includes('launion') || cleanUrl.includes('sanjuan')) {
-      importedName = 'Elyu Wheels & Waves Moto';
-      importedLogo = 'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=200&auto=format&fit=crop&q=80';
-      importedCover = 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=1200&auto=format&fit=crop&q=80';
-      category = 'Motorcycle Rental Shop';
-      about = 'San Juan La Union premier motorbike rentals. Automatic scooters for beach hopping.';
-      followers = 21400;
-    } else if (cleanUrl.includes('siargao')) {
-      importedName = 'Siargao Island Moto Rentals';
-      importedLogo = 'https://images.unsplash.com/photo-1558980664-3a031cf67ea8?w=200&auto=format&fit=crop&q=80';
-      importedCover = 'https://images.unsplash.com/photo-1516815231560-8f41ec531527?w=1200&auto=format&fit=crop&q=80';
-      category = 'Island Scooter Hire';
-      about = 'Daily and monthly automatic scooter rentals in General Luna, Siargao.';
-      followers = 13500;
-    } else {
-      const pathPart = cleanUrl
-        .replace(/https?:\/\/(www\.)?facebook\.com\/?/, '')
-        .replace(/\/.*$/, '')
-        .replace(/[-_.]/g, ' ');
-      const words = pathPart
-        ? pathPart.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-        : 'Island Moto Rentals';
-      importedName = words || 'Partner Moto Rentals';
-      importedLogo = 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=200&auto=format&fit=crop&q=80';
-      importedCover = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80';
-      about = `Official Facebook Page for ${importedName}. Verified rental operator.`;
-      followers = Math.floor(3000 + Math.random() * 8000);
+    if (!importedName) {
+      if (cleanUrl.includes('liwliwa')) {
+        importedName = 'Liwliwa Surf & Moto Rentals';
+        importedLogo = importedLogo || 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=300&auto=format&fit=crop&q=80';
+        importedCover = importedCover || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80';
+        category = 'Surf Town Bike Rental';
+        about = 'Beach cruiser scooters with surf racks in Liwliwa, San Felipe.';
+        followers = 9200;
+      } else if (cleanUrl.includes('elyu') || cleanUrl.includes('launion') || cleanUrl.includes('sanjuan')) {
+        importedName = 'Elyu Wheels & Waves Moto';
+        importedLogo = importedLogo || 'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=300&auto=format&fit=crop&q=80';
+        importedCover = importedCover || 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=1200&auto=format&fit=crop&q=80';
+        category = 'Motorcycle Rental Shop';
+        about = 'San Juan La Union premier motorbike rentals. Automatic scooters for beach hopping.';
+        followers = 21400;
+      } else if (cleanUrl.includes('siargao')) {
+        importedName = 'Siargao Island Moto Rentals';
+        importedLogo = importedLogo || 'https://images.unsplash.com/photo-1558980664-3a031cf67ea8?w=300&auto=format&fit=crop&q=80';
+        importedCover = importedCover || 'https://images.unsplash.com/photo-1516815231560-8f41ec531527?w=1200&auto=format&fit=crop&q=80';
+        category = 'Island Scooter Hire';
+        about = 'Daily and monthly automatic scooter rentals in General Luna, Siargao.';
+        followers = 13500;
+      } else if (cleanUrl.includes('rideout') || cleanUrl.includes('zambales')) {
+        importedName = 'RideOUT Zambales';
+        importedLogo = importedLogo || '/assets/images/bike_urban_scooter_1793338342006.jpg';
+        importedCover = importedCover || '/assets/images/hero_coastal_ride_1793338340532.jpg';
+        category = 'Adventure Scooter & Motorcycle Fleet';
+        about = 'Zambales premier motorbike rental fleet. Digital inspections and instant dispatch.';
+        followers = 16800;
+      } else {
+        const pathPart = cleanUrl
+          .replace(/https?:\/\/(www\.)?facebook\.com\/?/, '')
+          .replace(/\/.*$/, '')
+          .replace(/[-_.]/g, ' ');
+        const words = pathPart
+          ? pathPart.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+          : 'Island Moto Rentals';
+        importedName = words || 'Partner Moto Rentals';
+        importedLogo = importedLogo || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=300&auto=format&fit=crop&q=80';
+        importedCover = importedCover || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&auto=format&fit=crop&q=80';
+        about = `Official Facebook Page for ${importedName}. Verified rental operator.`;
+        followers = Math.floor(4500 + Math.random() * 8000);
+      }
     }
+
+    if (!importedLogo) {
+      importedLogo = 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=300&auto=format&fit=crop&q=80';
+    }
+    if (!importedCover) {
+      importedCover = '/assets/images/hero_coastal_ride_1793338340532.jpg';
+    }
+
+    const isConnected = options?.isConnected ?? true;
+    const inboxSynced = options?.inboxSynced ?? true;
+
+    const newBranding: FacebookPageBranding = {
+      pageUrl: fbPageUrl,
+      pageName: importedName,
+      pageCategory: category,
+      followersCount: followers,
+      aboutText: about,
+      importedAt: new Date().toISOString(),
+      isConnected,
+      inboxSynced,
+      pageId: options?.pageId || `fb-page-${Math.floor(100000 + Math.random() * 900000)}`,
+      connectedAt: new Date().toISOString(),
+    };
 
     setBusinesses((prev) =>
       prev.map((b) => {
@@ -825,22 +892,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             name: importedName,
             logoUrl: importedLogo,
             coverPhotoUrl: importedCover,
-            facebookBranding: {
-              pageUrl: fbPageUrl,
-              pageName: importedName,
-              pageCategory: category,
-              followersCount: followers,
-              aboutText: about,
-              importedAt: new Date().toISOString(),
-            },
+            facebookBranding: newBranding,
           };
         }
         return b;
       })
     );
 
-    showToast(`Branding successfully imported from Facebook: "${importedName}"!`, 'success');
-    return true;
+    const msg = isConnected 
+      ? `Facebook Connected! Page "${importedName}" cover, logo & Messenger inbox synced!`
+      : `Branding successfully imported from Facebook: "${importedName}"!`;
+    showToast(msg, 'success');
+
+    return {
+      success: true,
+      name: importedName,
+      logoUrl: importedLogo,
+      coverPhotoUrl: importedCover,
+      branding: newBranding,
+    };
   };
 
   const activateBusiness = (id: string) => {

@@ -92,10 +92,13 @@ export const GoogleOAuthSubscribeModal: React.FC<GoogleOAuthSubscribeModalProps>
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md p-3 sm:p-6 flex justify-center items-start sm:items-center animate-fade-in">
-      <div className={`bg-stone-900 border border-stone-800 rounded-3xl w-full p-5 sm:p-7 shadow-2xl space-y-5 text-stone-100 relative my-auto max-h-[88vh] overflow-y-auto ${
-        modalMode === 'business_wizard' ? 'max-w-3xl' : 'max-w-xl'
-      }`}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-hidden animate-fade-in">
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className={`bg-stone-900 border border-stone-700/80 rounded-2xl sm:rounded-3xl w-full shadow-2xl flex flex-col text-stone-100 relative max-h-[90vh] overflow-hidden ${
+          modalMode === 'business_wizard' ? 'max-w-3xl' : 'max-w-lg'
+        }`}
+      >
         
         {/* Close Button */}
         <button
@@ -106,8 +109,8 @@ export const GoogleOAuthSubscribeModal: React.FC<GoogleOAuthSubscribeModalProps>
           <X className="w-5 h-5" />
         </button>
 
-        {/* Modal Header */}
-        <div className="flex items-start gap-3.5 pr-8 border-b border-stone-800/80 pb-4">
+        {/* Fixed Modal Header */}
+        <div className="shrink-0 p-5 sm:p-6 pb-4 border-b border-stone-800/80 flex items-start gap-3.5 pr-12 bg-stone-900/90 backdrop-blur-sm">
           <div className="w-11 h-11 rounded-2xl bg-white p-2.5 flex items-center justify-center shadow-lg shrink-0">
             <svg viewBox="0 0 24 24" width="22" height="22">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -120,13 +123,13 @@ export const GoogleOAuthSubscribeModal: React.FC<GoogleOAuthSubscribeModalProps>
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono uppercase tracking-wider font-bold bg-amber-400/10 text-amber-400 border border-amber-400/20 px-2 py-0.5 rounded">
-                Google OAuth Login
+                Google OAuth Pop-up
               </span>
               <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                 Subscription Verification
               </span>
             </div>
-            <h3 className="text-lg font-bold text-stone-100 mt-1">
+            <h3 className="text-base sm:text-lg font-bold text-stone-100 mt-1">
               Rideout Rentals Vehicle System
             </h3>
             <p className="text-xs text-stone-400">
@@ -137,6 +140,9 @@ export const GoogleOAuthSubscribeModal: React.FC<GoogleOAuthSubscribeModalProps>
             </p>
           </div>
         </div>
+
+        {/* Scrollable Modal Content Body */}
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
 
         {/* MODE 1: Standard Login Form */}
         {modalMode === 'login' && (
@@ -368,7 +374,9 @@ export const GoogleOAuthSubscribeModal: React.FC<GoogleOAuthSubscribeModalProps>
           />
         )}
 
+        </div>
       </div>
     </div>
   );
 };
+

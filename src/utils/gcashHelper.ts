@@ -158,29 +158,31 @@ export function openGCashMobileApp(options?: {
   const isAndroid = /Android/i.test(navigator.userAgent);
   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
+  if (options?.accountNumber) {
+    const cleanNum = options.accountNumber.replace(/[^0-9]/g, '');
+    try {
+      navigator.clipboard.writeText(cleanNum);
+      options?.onNotice?.(`Copied GCash number (${cleanNum}) to clipboard! Launching payment...`);
+    } catch {
+      // ignore
+    }
+  }
+
   if (isMobile) {
-    // Attempt deep link trigger
-    const start = Date.now();
-    window.location.href = gcashDeeplink;
+    // Attempt deep link trigger safely via anchor click
+    try {
+      const link = document.createElement('a');
+      link.href = gcashDeeplink;
+      link.click();
+    } catch {
+      window.location.href = gcashDeeplink;
+    }
 
-    // If app didn't open within 1.5 seconds, redirect to app store or web
     setTimeout(() => {
-      if (Date.now() - start < 2000) {
-        if (isAndroid) {
-          window.location.href = gcashPlayStore;
-        } else if (isIOS) {
-          window.location.href = gcashAppStore;
-        } else {
-          window.location.href = gcashWeb;
-        }
-      }
-    }, 1500);
-
-    options?.onNotice?.('Launching GCash app on your mobile device...');
+      // Fallback
+      options?.onNotice?.('If GCash did not open automatically, please scan the QR code.');
+    }, 1200);
   } else {
-    // Desktop browser notice
-    options?.onNotice?.('Please scan the GCash QR code using your phone or open the GCash app to send money.');
-    // Offer quick copy or web link
-    window.open(gcashWeb, '_blank', 'noopener,noreferrer');
+    options?.onNotice?.('GCash number copied! Scan the QR code or send to ' + (options?.accountNumber || 'merchant'));
   }
 }

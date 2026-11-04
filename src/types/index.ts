@@ -21,6 +21,7 @@ export interface Motorbike {
   fuelLevel: number; // 0 to 100%
   status: BikeStatus;
   imageUrl: string;
+  photos?: string[]; // Minimum 4 required photos: Front, Left Side, Right Side, Rear
   features: string[];
   helmetCapacity: number;
   transmission: 'Automatic (CVT)' | 'Manual (Clutch)' | 'Semi-Automatic';
@@ -392,6 +393,10 @@ export interface FacebookPageBranding {
   followersCount?: number;
   aboutText?: string;
   importedAt?: string;
+  isConnected?: boolean;
+  inboxSynced?: boolean;
+  pageId?: string;
+  connectedAt?: string;
 }
 
 export interface StaffPermissions {
@@ -570,6 +575,10 @@ export interface MotorbikeRegistrationDocs {
   engineNumber: string;
   chassisNumber: string;
   expiryDate: string;
+  modelName?: string;
+  customerName?: string;
+  orUrl?: string;
+  crUrl?: string;
 }
 
 export interface RecommendedDestination {
