@@ -54,172 +54,24 @@ export const RideoutRentalsLandingView: React.FC = () => {
   } = useApp();
 
   const [isPwaModalOpen, setIsPwaModalOpen] = useState(false);
-  const [selectedCountryCode, setSelectedCountryCode] = useState<string>('PH'); // Default Philippines
 
-  const activeCountry = SOUTHEAST_ASIA_COUNTRIES.find(c => c.code === selectedCountryCode) || SOUTHEAST_ASIA_COUNTRIES[0];
+  const activeCountry = SOUTHEAST_ASIA_COUNTRIES.find(c => c.defaultCurrency === currency) || SOUTHEAST_ASIA_COUNTRIES[0];
   const activeCurrencyConfig = SUPPORTED_CURRENCIES.find(c => c.code === currency) || SUPPORTED_CURRENCIES[0];
-
-  const handleSelectCountry = (country: typeof SOUTHEAST_ASIA_COUNTRIES[0]) => {
-    setSelectedCountryCode(country.code);
-    setCurrency(country.defaultCurrency);
-    if (country.defaultLanguage) {
-      setLanguage(country.defaultLanguage);
-    }
-    showToast(`${country.flag} Region set to ${country.name} · Currency: ${country.defaultCurrency} (${CURRENCY_FLAGS[country.defaultCurrency]})`, 'success');
-  };
 
   return (
     <div className="space-y-10 pb-16 text-stone-100">
-      
-      {/* Top Bar: Regional Settings with Flags (Country, Currency, Language) */}
-      <div className="rounded-2xl border border-stone-800 bg-stone-900/90 backdrop-blur-md p-3.5 sm:p-4 shadow-xl">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
-          
-          {/* Left: Quick Flag Selector for Southeast Asia */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-stone-300 mr-1">
-              <Globe className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span>Southeast Asia:</span>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-1.5">
-              {SOUTHEAST_ASIA_COUNTRIES.map((country) => {
-                const isSelected = selectedCountryCode === country.code;
-                return (
-                  <button
-                    key={country.code}
-                    onClick={() => handleSelectCountry(country)}
-                    className={`px-2.5 py-1 rounded-xl text-xs flex items-center gap-1.5 transition-all font-medium border ${
-                      isSelected
-                        ? 'bg-amber-400 text-stone-950 border-amber-400 shadow-sm font-bold scale-[1.02]'
-                        : 'bg-stone-950/80 text-stone-300 hover:text-white border-stone-800 hover:border-stone-700'
-                    }`}
-                    title={`${country.name} · Default: ${country.defaultCurrency}`}
-                  >
-                    <span className="text-base leading-none">{country.flag}</span>
-                    <span>{country.name}</span>
-                    {isSelected && (
-                      <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-stone-950 text-amber-400 ml-0.5 font-bold">
-                        {country.defaultCurrency}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Right: Fine-tuned Settings with Flags (Country, Currency, Language Dropdowns) */}
-          <div className="flex flex-wrap items-center gap-2 self-start lg:self-auto border-t lg:border-t-0 border-stone-800 pt-2 lg:pt-0">
-            
-            {/* Country Selector with Flag */}
-            <div className="flex items-center gap-1 bg-stone-950 border border-stone-800 rounded-lg px-2 py-1 text-xs">
-              <span className="text-sm">{activeCountry.flag}</span>
-              <select
-                aria-label="Select Country"
-                value={selectedCountryCode}
-                onChange={(e) => {
-                  const found = SOUTHEAST_ASIA_COUNTRIES.find(c => c.code === e.target.value);
-                  if (found) handleSelectCountry(found);
-                }}
-                className="bg-transparent text-stone-200 text-xs focus:outline-none cursor-pointer"
-              >
-                {SOUTHEAST_ASIA_COUNTRIES.map((c) => (
-                  <option key={c.code} value={c.code} className="bg-stone-900 text-stone-200">
-                    {c.flag} {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Currency Selector with Flag */}
-            <div className="flex items-center gap-1 bg-stone-950 border border-stone-800 rounded-lg px-2 py-1 text-xs">
-              <span className="text-sm">{CURRENCY_FLAGS[currency] || '🪙'}</span>
-              <select
-                aria-label="Select Currency"
-                value={currency}
-                onChange={(e) => {
-                  const val = e.target.value as keyof typeof CURRENCY_FLAGS;
-                  setCurrency(val);
-                  showToast(`${CURRENCY_FLAGS[val] || ''} Currency switched to ${val}`, 'info');
-                }}
-                className="bg-transparent text-stone-200 text-xs font-mono focus:outline-none cursor-pointer"
-              >
-                {SUPPORTED_CURRENCIES.map((c) => (
-                  <option key={c.code} value={c.code} className="bg-stone-900 text-stone-200">
-                    {CURRENCY_FLAGS[c.code as keyof typeof CURRENCY_FLAGS]} {c.symbol} {c.code} ({c.name})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Language Selector with Flag */}
-            <div className="flex items-center gap-1 bg-stone-950 border border-stone-800 rounded-lg px-2 py-1 text-xs">
-              <select
-                aria-label="Select Language"
-                value={language}
-                onChange={(e) => {
-                  const val = e.target.value as any;
-                  setLanguage(val);
-                  showToast(`Language updated`, 'info');
-                }}
-                className="bg-transparent text-stone-200 text-xs focus:outline-none cursor-pointer"
-              >
-                {SUPPORTED_LANGUAGES.map((l) => (
-                  <option key={l.code} value={l.code} className="bg-stone-900 text-stone-200">
-                    {l.flag} {l.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Auth / Depot Console Access */}
-            {currentUser ? (
-              <div className="flex items-center gap-1.5 bg-stone-950 border border-emerald-500/30 rounded-lg px-2.5 py-1 text-xs">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-                <span className="text-stone-300 font-mono text-[11px] truncate max-w-[120px] hidden sm:inline" title={currentUser.email}>
-                  {currentUser.email}
-                </span>
-                <button
-                  onClick={() => setActiveTab('overview')}
-                  className="px-2 py-0.5 rounded bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold text-[11px] transition-colors flex items-center gap-1"
-                >
-                  <span>Depot Console</span>
-                  <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={() => openAuthModal('login')}
-                  className="px-2.5 py-1 rounded-lg bg-stone-950 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-white text-xs font-semibold transition-colors flex items-center gap-1"
-                  title="Sign In with Google OAuth"
-                >
-                  <KeyRound className="w-3 h-3 text-amber-400" />
-                  <span>Sign In</span>
-                </button>
-                <button
-                  onClick={() => openAuthModal('signup')}
-                  className="px-2.5 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-stone-950 text-xs font-bold transition-colors flex items-center gap-1 shadow-sm"
-                  title="Subscribe & Start 30-Day Free Trial"
-                >
-                  <Sparkles className="w-3 h-3" />
-                  <span>Try 30d Free</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
 
       {/* Hero Visual Section with Graphic Mockup & Coastal Backdrop */}
       <div className="relative overflow-hidden rounded-3xl border border-stone-800 bg-stone-950 shadow-2xl">
         {/* Background Visual Graphic with Overlay */}
-        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-gradient-to-br from-amber-500/10 via-stone-950 to-stone-950">
           <img
-            src="/src/assets/images/hero_coastal_ride_1793338340532.jpg"
-            alt="Southeast Asia Coastal Moto Route"
+            src="/assets/images/hero_coastal_ride_1793338340532.jpg"
+            alt=""
             className="w-full h-full object-cover object-center filter saturate-150"
+            onError={(e) => {
+              (e.target as HTMLElement).style.display = 'none';
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/80 to-stone-950/40" />
         </div>
@@ -349,9 +201,12 @@ export const RideoutRentalsLandingView: React.FC = () => {
                 </div>
                 <div className="aspect-video rounded-lg overflow-hidden relative border border-stone-800">
                   <img
-                    src="/src/assets/images/bike_touring_scooter_1793338342942.jpg"
+                    src="/assets/images/bike_touring_scooter_1793338342942.jpg"
                     alt="Inspection vehicle photo"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
                   />
                   <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/80 rounded text-[9px] font-mono text-stone-200">
                     Front / ODO 4,820km
@@ -461,9 +316,12 @@ export const RideoutRentalsLandingView: React.FC = () => {
             <div>
               <div className="aspect-[16/10] overflow-hidden relative bg-stone-950">
                 <img
-                  src="/src/assets/images/bike_touring_scooter_1793338342942.jpg"
+                  src="/assets/images/bike_touring_scooter_1793338342942.jpg"
                   alt="Yamaha NMAX 155 Touring Maxi-Scooter"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
                 />
                 <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-stone-950/80 backdrop-blur-md text-[10px] font-mono font-semibold text-amber-400 border border-stone-700">
                   Touring Maxi-Scooter
@@ -500,9 +358,12 @@ export const RideoutRentalsLandingView: React.FC = () => {
             <div>
               <div className="aspect-[16/10] overflow-hidden relative bg-stone-950">
                 <img
-                  src="/src/assets/images/bike_adventure_dual_1793338342581.jpg"
+                  src="/assets/images/bike_adventure_dual_1793338342581.jpg"
                   alt="Honda CRF 300L Rally Adventure Dual-Sport"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
                 />
                 <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-stone-950/80 backdrop-blur-md text-[10px] font-mono font-semibold text-emerald-400 border border-stone-700">
                   Adventure Dual-Sport
@@ -539,9 +400,12 @@ export const RideoutRentalsLandingView: React.FC = () => {
             <div>
               <div className="aspect-[16/10] overflow-hidden relative bg-stone-950">
                 <img
-                  src="/src/assets/images/bike_urban_scooter_1793338342006.jpg"
+                  src="/assets/images/bike_urban_scooter_1793338342006.jpg"
                   alt="Honda Click 125i Urban Commuter"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
                 />
                 <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-stone-950/80 backdrop-blur-md text-[10px] font-mono font-semibold text-blue-400 border border-stone-700">
                   Urban Commuter

@@ -156,7 +156,7 @@ export const PickupInspectionView: React.FC = () => {
 
   // Step 3: Bike Photos (Front, Left, Right, Rear, Dashboard)
   const [bikePhotos, setBikePhotos] = useState<BikePhotos>({
-    front: '/src/assets/images/bike_touring_scooter_1793338342942.jpg',
+    front: '/assets/images/bike_touring_scooter_1793338342942.jpg',
     left: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&auto=format&fit=crop&q=80',
     right: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=600&auto=format&fit=crop&q=80',
     rear: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=600&auto=format&fit=crop&q=80',
@@ -182,7 +182,7 @@ export const PickupInspectionView: React.FC = () => {
   // RETURN MODE STATE
   const [returnStep, setReturnStep] = useState<1 | 2 | 3>(1);
   const [returnBikePhotos, setReturnBikePhotos] = useState<BikePhotos>({
-    front: '/src/assets/images/bike_touring_scooter_1793338342942.jpg',
+    front: '/assets/images/bike_touring_scooter_1793338342942.jpg',
     left: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&auto=format&fit=crop&q=80',
     right: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=600&auto=format&fit=crop&q=80',
     rear: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=600&auto=format&fit=crop&q=80',

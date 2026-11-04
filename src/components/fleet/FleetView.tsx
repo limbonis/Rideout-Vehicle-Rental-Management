@@ -70,10 +70,10 @@ export const FleetView: React.FC<FleetViewProps> = ({ onOpenNewBookingWithBike }
       fuelLevel: 100,
       status: 'available',
       imageUrl: category === 'adventure' 
-        ? '/src/assets/images/bike_adventure_dual_1793338342581.jpg' 
+        ? '/assets/images/bike_adventure_dual_1793338342581.jpg' 
         : (category === 'maxi-scooter' 
-          ? '/src/assets/images/bike_touring_scooter_1793338342942.jpg' 
-          : '/src/assets/images/bike_urban_scooter_1793338342006.jpg'),
+          ? '/assets/images/bike_touring_scooter_1793338342942.jpg' 
+          : '/assets/images/bike_urban_scooter_1793338342006.jpg'),
       features: ['Underseat Helmet Space', 'Dual Rear Shocks', 'Fuel Efficient Engine'],
       helmetCapacity: 1,
       transmission,

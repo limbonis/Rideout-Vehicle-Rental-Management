@@ -85,7 +85,7 @@ export const SocialMediaStudio: React.FC = () => {
   }, [inspections]);
 
   const [tiktokImage, setTiktokImage] = useState<string>(
-    recentRiderSelfies[0]?.selfieUrl || '/src/assets/images/hero_coastal_ride_1793338340532.jpg'
+    recentRiderSelfies[0]?.selfieUrl || '/assets/images/hero_coastal_ride_1793338340532.jpg'
   );
 
   const [customLayover, setCustomLayover] = useState('');
@@ -565,9 +565,9 @@ export const SocialMediaStudio: React.FC = () => {
 
                   {/* Preset Scenery Assets */}
                   {[
-                    { label: 'Coastal Highway', path: '/src/assets/images/hero_coastal_ride_1793338340532.jpg' },
-                    { label: 'NMAX Cruiser', path: '/src/assets/images/bike_touring_scooter_1793338342942.jpg' },
-                    { label: 'CRF Mountain Trail', path: '/src/assets/images/bike_adventure_dual_1793338342581.jpg' },
+                    { label: 'Coastal Highway', path: '/assets/images/hero_coastal_ride_1793338340532.jpg' },
+                    { label: 'NMAX Cruiser', path: '/assets/images/bike_touring_scooter_1793338342942.jpg' },
+                    { label: 'CRF Mountain Trail', path: '/assets/images/bike_adventure_dual_1793338342581.jpg' },
                   ].map((item, idx) => (
                     <button
                       key={idx}

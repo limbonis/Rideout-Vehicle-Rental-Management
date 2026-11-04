@@ -92,8 +92,8 @@ export const GoogleOAuthSubscribeModal: React.FC<GoogleOAuthSubscribeModalProps>
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-fade-in">
-      <div className={`bg-stone-900 border border-stone-800 rounded-3xl w-full p-5 sm:p-7 shadow-2xl space-y-5 text-stone-100 relative max-h-[92vh] overflow-y-auto ${
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md p-3 sm:p-6 flex justify-center items-start sm:items-center animate-fade-in">
+      <div className={`bg-stone-900 border border-stone-800 rounded-3xl w-full p-5 sm:p-7 shadow-2xl space-y-5 text-stone-100 relative my-auto max-h-[88vh] overflow-y-auto ${
         modalMode === 'business_wizard' ? 'max-w-3xl' : 'max-w-xl'
       }`}>
         

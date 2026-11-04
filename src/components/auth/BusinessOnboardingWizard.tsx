@@ -37,9 +37,9 @@ interface BusinessOnboardingWizardProps {
 }
 
 const SAMPLE_BIKE_IMAGES = [
-  { label: 'Urban Scooter (Honda Click 125i)', url: '/src/assets/images/bike_urban_scooter_1793338342006.jpg', model: 'Honda Click 125i', category: 'scooter' as BikeCategory, cc: 125, rate: 500 },
-  { label: 'Touring Maxi-Scooter (Yamaha NMAX 155)', url: '/src/assets/images/bike_touring_scooter_1793338342942.jpg', model: 'Yamaha NMAX 155', category: 'maxi-scooter' as BikeCategory, cc: 155, rate: 700 },
-  { label: 'Adventure Dual-Sport (Honda CRF300L)', url: '/src/assets/images/bike_adventure_dual_1793338342581.jpg', model: 'Honda CRF300L Dual-Sport', category: 'adventure' as BikeCategory, cc: 300, rate: 1200 },
+  { label: 'Urban Scooter (Honda Click 125i)', url: '/assets/images/bike_urban_scooter_1793338342006.jpg', model: 'Honda Click 125i', category: 'scooter' as BikeCategory, cc: 125, rate: 500 },
+  { label: 'Touring Maxi-Scooter (Yamaha NMAX 155)', url: '/assets/images/bike_touring_scooter_1793338342942.jpg', model: 'Yamaha NMAX 155', category: 'maxi-scooter' as BikeCategory, cc: 155, rate: 700 },
+  { label: 'Adventure Dual-Sport (Honda CRF300L)', url: '/assets/images/bike_adventure_dual_1793338342581.jpg', model: 'Honda CRF300L Dual-Sport', category: 'adventure' as BikeCategory, cc: 300, rate: 1200 },
 ];
 
 export const BusinessOnboardingWizard: React.FC<BusinessOnboardingWizardProps> = ({
@@ -82,7 +82,7 @@ export const BusinessOnboardingWizard: React.FC<BusinessOnboardingWizardProps> =
   const [vehicleCategory, setVehicleCategory] = useState<BikeCategory>('scooter');
   const [engineCc, setEngineCc] = useState<number>(125);
   const [dailyRate, setDailyRate] = useState<number>(500);
-  const [vehiclePhotoUrl, setVehiclePhotoUrl] = useState<string>('/src/assets/images/bike_urban_scooter_1793338342006.jpg');
+  const [vehiclePhotoUrl, setVehiclePhotoUrl] = useState<string>('/assets/images/bike_urban_scooter_1793338342006.jpg');
 
   // LTO Registration OCR / Verification
   const [crPhotoUrl, setCrPhotoUrl] = useState<string>('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&auto=format&fit=crop&q=80');
