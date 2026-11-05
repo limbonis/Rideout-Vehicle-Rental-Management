@@ -5,33 +5,28 @@
 
 import React, { useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
-import { Navigation } from './components/Navigation';
-import { OverviewStats } from './components/analytics/OverviewStats';
-import { ReservationsView } from './components/reservations/ReservationsView';
-import { NewReservationModal } from './components/reservations/NewReservationModal';
-import { PickupInspectionView } from './components/pickups/PickupInspectionView';
-import { FleetView } from './components/fleet/FleetView';
-import { SocialMediaStudio } from './components/social/SocialMediaStudio';
-import { CustomerBookingView } from './components/customer/CustomerBookingView';
-import { PromoManagementView } from './components/promos/PromoManagementView';
-import { ShopBrandingView } from './components/tenant/ShopBrandingView';
-import { BusinessActivationView } from './components/tenant/BusinessActivationView';
-import { UnifiedInboxView } from './components/inbox/UnifiedInboxView';
-import { DepotSummaryReportView } from './components/analytics/DepotSummaryReportView';
 import { RideoutRentalsLandingView } from './components/landing/RideoutRentalsLandingView';
-import { Reservation } from './types';
+import { CustomerBookingModal } from './components/customer/CustomerBookingModal';
+import { PlatformDemoVideoModal } from './components/demo/PlatformDemoVideoModal';
+import { DepotConsoleModal } from './components/tenant/DepotConsoleModal';
+import { NewReservationModal } from './components/reservations/NewReservationModal';
+import { GoogleOAuthSubscribeModal } from './components/auth/GoogleOAuthSubscribeModal';
 import { CheckCircle2, AlertCircle, Info, X, RotateCcw } from 'lucide-react';
 
 function AppContent() {
   const { 
-    activeTab, 
-    setActiveTab, 
     toasts, 
     removeToast, 
-    setSelectedReservationForPickup, 
-    resetDemoData 
+    resetDemoData,
+    currentUser,
+    isAuthModalOpen,
+    setIsAuthModalOpen,
+    authModalInitialMode
   } = useApp();
 
+  const [isCustomerBookingModalOpen, setIsCustomerBookingModalOpen] = useState(false);
+  const [isVideoDemoModalOpen, setIsVideoDemoModalOpen] = useState(false);
+  const [isDepotConsoleModalOpen, setIsDepotConsoleModalOpen] = useState(false);
   const [isNewBookingModalOpen, setIsNewBookingModalOpen] = useState(false);
   const [initialBikeForBooking, setInitialBikeForBooking] = useState<string | undefined>(undefined);
 
@@ -40,76 +35,53 @@ function AppContent() {
     setIsNewBookingModalOpen(true);
   };
 
-  const handleSelectReservationForPickup = (res: Reservation) => {
-    setSelectedReservationForPickup(res);
-    setActiveTab('pickups');
+  const scrollToFeaturesAndPricing = () => {
+    const el = document.getElementById('features-and-pricing');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
-      {/* Top Bar adhering to Top Bar Contract */}
-      <Navigation onOpenNewBookingModal={() => handleOpenBookingWithBike()} />
-
-      {/* Main Viewport Container */}
+      
+      {/* Main Single-Section Viewport: Everything in one unified landing experience */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-        {activeTab === 'landing' && (
-          <RideoutRentalsLandingView />
-        )}
-
-        {activeTab === 'overview' && (
-          <OverviewStats
-            onOpenNewBooking={() => handleOpenBookingWithBike()}
-            onSelectReservationForPickup={handleSelectReservationForPickup}
-          />
-        )}
-
-        {activeTab === 'reservations' && (
-          <ReservationsView
-            onOpenNewBooking={() => handleOpenBookingWithBike()}
-            onSelectForPickup={handleSelectReservationForPickup}
-          />
-        )}
-
-        {activeTab === 'pickups' && (
-          <PickupInspectionView />
-        )}
-
-        {activeTab === 'fleet' && (
-          <FleetView
-            onOpenNewBookingWithBike={(bikeId) => handleOpenBookingWithBike(bikeId)}
-          />
-        )}
-
-        {activeTab === 'reports' && (
-          <DepotSummaryReportView />
-        )}
-
-        {activeTab === 'promos' && (
-          <PromoManagementView />
-        )}
-
-        {activeTab === 'social' && (
-          <SocialMediaStudio />
-        )}
-
-        {activeTab === 'inbox' && (
-          <UnifiedInboxView />
-        )}
-
-        {activeTab === 'branding' && (
-          <ShopBrandingView />
-        )}
-
-        {activeTab === 'partner-network' && (
-          <BusinessActivationView />
-        )}
-
-        {activeTab === 'customer-portal' && (
-          <CustomerBookingView />
-        )}
+        <RideoutRentalsLandingView
+          onOpenCustomerBooking={() => setIsCustomerBookingModalOpen(true)}
+          onOpenVideoDemo={() => setIsVideoDemoModalOpen(true)}
+          onOpenDepotConsole={() => setIsDepotConsoleModalOpen(true)}
+        />
       </main>
 
-      {/* Global New Reservation Modal */}
+      {/* Customer Booking Portal Modal (Search a Motorbike through Our Business Partners) */}
+      <CustomerBookingModal
+        isOpen={isCustomerBookingModalOpen}
+        onClose={() => setIsCustomerBookingModalOpen(false)}
+      />
+
+      {/* Platform Interactive Video Demo Modal */}
+      <PlatformDemoVideoModal
+        isOpen={isVideoDemoModalOpen}
+        onClose={() => setIsVideoDemoModalOpen(false)}
+        onOpenConsoleDemo={() => setIsDepotConsoleModalOpen(true)}
+      />
+
+      {/* Depot Console Modal (for active business subscribers & demo tests) */}
+      <DepotConsoleModal
+        isOpen={isDepotConsoleModalOpen}
+        onClose={() => setIsDepotConsoleModalOpen(false)}
+        onOpenNewBooking={(bikeId) => handleOpenBookingWithBike(bikeId)}
+      />
+
+      {/* Google OAuth & Subscription Modal */}
+      <GoogleOAuthSubscribeModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authModalInitialMode}
+      />
+
+      {/* Manual Booking Modal */}
       {isNewBookingModalOpen && (
         <NewReservationModal
           onClose={() => {
@@ -162,17 +134,27 @@ function AppContent() {
             </div>
             <div className="flex items-center gap-3 text-stone-400">
               <button 
-                onClick={() => setActiveTab('landing')}
+                type="button"
+                onClick={scrollToFeaturesAndPricing}
                 className="hover:text-amber-400 transition-colors"
               >
                 Features & Pricing
               </button>
               <span className="text-stone-600">·</span>
               <button 
-                onClick={() => setActiveTab('customer-portal')}
+                type="button"
+                onClick={() => setIsCustomerBookingModalOpen(true)}
                 className="hover:text-amber-400 transition-colors"
               >
-                Customer Portal
+                Search a Motorbike
+              </button>
+              <span className="text-stone-600">·</span>
+              <button 
+                type="button"
+                onClick={() => setIsVideoDemoModalOpen(true)}
+                className="hover:text-amber-400 transition-colors text-amber-400/90"
+              >
+                View Demo
               </button>
             </div>
           </div>
@@ -180,7 +162,7 @@ function AppContent() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-stone-500 text-[11px]">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-semibold text-stone-400">Country:</span>
-              <span className="text-stone-300">Philippines (Default)</span>
+              <span className="text-stone-300">Philippines (Default 🇵🇭)</span>
               <span aria-hidden="true">·</span>
               <span className="font-semibold text-stone-400">Currency:</span>
               <span className="text-stone-300">Philippine Peso (PHP ₱)</span>
@@ -191,6 +173,7 @@ function AppContent() {
 
             <div className="flex items-center gap-4">
               <button
+                type="button"
                 onClick={resetDemoData}
                 className="hover:text-stone-300 transition-colors flex items-center gap-1.5"
                 title="Reset fleet, bookings and posts to original demo state"

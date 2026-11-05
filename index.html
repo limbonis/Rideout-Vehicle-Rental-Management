@@ -23,6 +23,27 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- Suppress benign preview environment WebSocket / HMR disconnection errors -->
+    <script>
+      window.addEventListener('error', function(event) {
+        if (event && event.message && (
+          event.message.includes('WebSocket') || 
+          event.message.includes('WebSocket closed') ||
+          event.message.includes('@vite/client')
+        )) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          return true;
+        }
+      }, true);
+      window.addEventListener('unhandledrejection', function(event) {
+        if (event && event.reason && String(event.reason).includes('WebSocket')) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      }, true);
+    </script>
   </head>
   <body class="bg-stone-950 text-stone-100 antialiased selection:bg-amber-500 selection:text-stone-950 font-['Plus_Jakarta_Sans',sans-serif]">
     <div id="root"></div>

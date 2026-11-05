@@ -92,10 +92,10 @@ export const GoogleOAuthSubscribeModal: React.FC<GoogleOAuthSubscribeModalProps>
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-fade-in overflow-y-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md animate-fade-in p-3 sm:p-6 flex items-start sm:items-center justify-center">
       <div 
         onClick={(e) => e.stopPropagation()}
-        className={`bg-stone-900 border border-stone-800 rounded-2xl sm:rounded-3xl w-full shadow-2xl flex flex-col text-stone-100 relative max-h-[90vh] my-auto overflow-hidden ${
+        className={`bg-stone-900 border border-stone-800 rounded-2xl sm:rounded-3xl w-full shadow-2xl flex flex-col text-stone-100 relative max-h-[92vh] my-auto overflow-hidden ${
           modalMode === 'business_wizard' ? 'max-w-3xl' : 'max-w-md'
         }`}
       >

@@ -189,13 +189,31 @@ interface AppContextType {
       instagram?: string;
       whatsapp?: string;
       tiktok?: string;
+      viber?: string;
+      telegram?: string;
     };
     facebookBranding?: FacebookPageBranding;
+    paymayaAccountName?: string;
+    paymayaAccountNumber?: string;
+    paymayaQrCodeUrl?: string;
+    payoutMethodChoice?: 'gcash' | 'paymaya' | 'both';
     googleIntegration?: {
       sheetsAuthorized: boolean;
       driveAuthorized: boolean;
       spreadsheetUrl?: string;
       driveFolderUrl?: string;
+      scopesGranted?: string[];
+      permissionsGranted?: {
+        driveCreateFilesAndFolders: boolean;
+        sheetsManageDatabase: boolean;
+      };
+    };
+    nominatedServerPhone?: string;
+    androidGatewayConfig?: {
+      serverPhone: string;
+      hasInternetConnection: boolean;
+      nativeMessagingActive: boolean;
+      appInstalledOnServerPhone: boolean;
     };
     firstVehicle?: {
       name: string;
@@ -1011,13 +1029,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       instagram?: string;
       whatsapp?: string;
       tiktok?: string;
+      viber?: string;
+      telegram?: string;
     };
     facebookBranding?: FacebookPageBranding;
+    paymayaAccountName?: string;
+    paymayaAccountNumber?: string;
+    paymayaQrCodeUrl?: string;
+    payoutMethodChoice?: 'gcash' | 'paymaya' | 'both';
     googleIntegration?: {
       sheetsAuthorized: boolean;
       driveAuthorized: boolean;
       spreadsheetUrl?: string;
       driveFolderUrl?: string;
+      scopesGranted?: string[];
+      permissionsGranted?: {
+        driveCreateFilesAndFolders: boolean;
+        sheetsManageDatabase: boolean;
+      };
+    };
+    nominatedServerPhone?: string;
+    androidGatewayConfig?: {
+      serverPhone: string;
+      hasInternetConnection: boolean;
+      nativeMessagingActive: boolean;
+      appInstalledOnServerPhone: boolean;
     };
     firstVehicle?: {
       name: string;
@@ -1094,11 +1130,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       primaryColor: '#f59e0b',
       isFlagship: false,
       socials: data.socials,
+      payoutMethodChoice: data.payoutMethodChoice || 'gcash',
       googleIntegration: data.googleIntegration ? {
-        isConnected: Boolean(data.googleIntegration.sheetsAuthorized || data.googleIntegration.driveAuthorized),
+        isConnected: true, // Google Drive and Sheets mandatory connection
         email: data.email,
-        spreadsheetUrl: data.googleIntegration.spreadsheetUrl || `https://docs.google.com/spreadsheets/d/${slug}-ledger`,
+        spreadsheetUrl: data.googleIntegration.spreadsheetUrl || `https://docs.google.com/spreadsheets/d/${slug}-master-ledger`,
         driveFolderUrl: data.googleIntegration.driveFolderUrl || `https://drive.google.com/drive/folders/${slug}-archive`,
+        scopesGranted: data.googleIntegration.scopesGranted || [
+          'https://www.googleapis.com/auth/drive.file',
+          'https://www.googleapis.com/auth/spreadsheets'
+        ],
+        permissionsGranted: data.googleIntegration.permissionsGranted || {
+          driveCreateFilesAndFolders: true,
+          sheetsManageDatabase: true,
+        },
         lastSyncedAt: today.toISOString(),
         syncedRowCount: 0,
       } : undefined,
@@ -1120,6 +1165,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         depositAmount: 1000,
         instructions: `Send ₱1,000 reservation deposit to ${data.gcashAccountName} via GCash.`,
       },
+      paymayaConfig: data.paymayaAccountName ? {
+        accountName: data.paymayaAccountName,
+        accountNumber: data.paymayaAccountNumber || data.mobile,
+        qrCodeUrl: data.paymayaQrCodeUrl || '',
+        depositAmount: 1000,
+        instructions: `Send ₱1,000 reservation deposit to ${data.paymayaAccountName} via Maya / PayMaya.`,
+        isEnabled: true,
+      } : undefined,
       subscription: {
         status: 'trial',
         trialStartDate: today.toISOString().split('T')[0],
@@ -1143,6 +1196,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         ],
       },
       createdAt: today.toISOString(),
+      nominatedServerPhone: data.nominatedServerPhone,
+      androidGatewayConfig: data.androidGatewayConfig,
     };
 
     setBusinesses((prev) => [...prev, newBiz]);

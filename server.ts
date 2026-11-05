@@ -1,4 +1,5 @@
 import express from 'express';
+import http from 'http';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -10,6 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const httpServer = http.createServer(app);
 const port = parseInt(process.env.PORT || '3000', 10);
 
 app.use(express.json());
@@ -244,11 +246,12 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 if (!isProduction) {
   const { createServer: createViteServer } = await import('vite');
+  const isHmrDisabled = process.env.DISABLE_HMR === 'true';
   const vite = await createViteServer({
     server: { 
       middlewareMode: true, 
-      hmr: process.env.DISABLE_HMR !== 'true',
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
+      hmr: isHmrDisabled ? false : { server: httpServer },
+      watch: isHmrDisabled ? null : {},
     },
     appType: 'spa',
   });
@@ -261,6 +264,6 @@ if (!isProduction) {
   });
 }
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`RideOut Zambales server running on http://0.0.0.0:${port} (mode: ${isProduction ? 'production' : 'development'})`);
+httpServer.listen(port, '0.0.0.0', () => {
+  console.log(`Rideout Rentals server running on http://0.0.0.0:${port} (mode: ${isProduction ? 'production' : 'development'})`);
 });

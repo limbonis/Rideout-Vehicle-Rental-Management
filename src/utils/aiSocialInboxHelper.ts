@@ -228,3 +228,13 @@ export function getTikTokDirectUrl(handle: string): string {
   const clean = handle.replace(/^@/, '').replace(/^https?:\/\/tiktok\.com\/@?/, '');
   return `https://www.tiktok.com/@${clean}`;
 }
+
+export function getViberDirectUrl(phone: string): string {
+  const cleanPhone = phone.replace(/\D/g, '');
+  return `viber://chat?number=%2B${cleanPhone}`;
+}
+
+export function getTelegramDirectUrl(handle: string): string {
+  const clean = handle.replace(/^@/, '').replace(/^https?:\/\/t\.me\//, '');
+  return `https://t.me/${clean}`;
+}

@@ -1,4 +1,4 @@
-export type OmnichannelPlatform = 'messenger' | 'whatsapp' | 'instagram' | 'tiktok';
+export type OmnichannelPlatform = 'messenger' | 'whatsapp' | 'instagram' | 'tiktok' | 'viber' | 'telegram';
 
 export interface ChatMessage {
   id: string;

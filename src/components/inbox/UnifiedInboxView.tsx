@@ -6,7 +6,9 @@ import {
   getWhatsAppDirectUrl, 
   getMessengerDirectUrl, 
   getInstagramDirectUrl, 
-  getTikTokDirectUrl 
+  getTikTokDirectUrl,
+  getViberDirectUrl,
+  getTelegramDirectUrl
 } from '../../utils/aiSocialInboxHelper';
 import { calculateSmartPriceDiscount } from '../../types/smartPricing';
 import { 
@@ -198,6 +200,18 @@ export const UnifiedInboxView: React.FC = () => {
             TT
           </span>
         );
+      case 'viber':
+        return (
+          <span className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
+            V
+          </span>
+        );
+      case 'telegram':
+        return (
+          <span className="w-5 h-5 rounded-full bg-sky-500 text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
+            TG
+          </span>
+        );
     }
   };
 
@@ -207,6 +221,8 @@ export const UnifiedInboxView: React.FC = () => {
       case 'whatsapp': return 'WhatsApp';
       case 'instagram': return 'Instagram DM';
       case 'tiktok': return 'TikTok Messages';
+      case 'viber': return 'Viber Messaging';
+      case 'telegram': return 'Telegram';
     }
   };
 
@@ -222,6 +238,10 @@ export const UnifiedInboxView: React.FC = () => {
         return getInstagramDirectUrl(activeThread.customer.handle);
       case 'tiktok':
         return getTikTokDirectUrl(activeThread.customer.handle);
+      case 'viber':
+        return getViberDirectUrl(activeThread.customer.phone || activeThread.customer.handle);
+      case 'telegram':
+        return getTelegramDirectUrl(activeThread.customer.handle);
     }
   };
 
@@ -341,6 +361,26 @@ export const UnifiedInboxView: React.FC = () => {
                 }`}
               >
                 <span>TikTok</span>
+              </button>
+              <button
+                onClick={() => setPlatformFilter('viber')}
+                className={`px-2 py-1 rounded-md font-semibold shrink-0 transition-colors flex items-center gap-1 ${
+                  platformFilter === 'viber'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-stone-950 text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                <span>Viber</span>
+              </button>
+              <button
+                onClick={() => setPlatformFilter('telegram')}
+                className={`px-2 py-1 rounded-md font-semibold shrink-0 transition-colors flex items-center gap-1 ${
+                  platformFilter === 'telegram'
+                    ? 'bg-sky-500 text-white'
+                    : 'bg-stone-950 text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                <span>Telegram</span>
               </button>
             </div>
 

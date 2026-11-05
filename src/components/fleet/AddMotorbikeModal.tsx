@@ -48,102 +48,122 @@ interface SampleCrPreset {
   fourPhotos: [string, string, string, string]; // Front, Left, Right, Rear
 }
 
-const SAMPLE_CR_PRESETS: SampleCrPreset[] = [
-  {
-    brand: 'Honda',
-    model: 'Honda ADV 160 ABS',
-    category: 'adventure',
-    engineCc: 160,
-    plateNumber: 'ZA-4821',
-    engineNo: 'KF18E-9214018',
-    chassisNo: 'MH2KF1814PK081923',
-    dailyRate: 950,
-    yearModel: 2026,
-    transmission: 'Automatic (CVT)',
-    fourPhotos: [
-      '/assets/images/bike_adventure_dual_1793338342581.jpg',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=900&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=900&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=900&auto=format&fit=crop&q=80'
-    ]
-  },
-  {
-    brand: 'Yamaha',
-    model: 'Yamaha NMAX 155 ABS',
-    category: 'maxi-scooter',
-    engineCc: 155,
-    plateNumber: 'ZB-8194',
-    engineNo: 'G3E9-0091823',
-    chassisNo: 'MH3G3E917PK049211',
-    dailyRate: 850,
-    yearModel: 2026,
-    transmission: 'Automatic (CVT)',
-    fourPhotos: [
-      '/assets/images/bike_touring_scooter_1793338342942.jpg',
-      'https://images.unsplash.com/photo-1558980664-3a031cf67ea8?w=900&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=900&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1516815231560-8f41ec531527?w=900&auto=format&fit=crop&q=80'
-    ]
-  },
-  {
-    brand: 'Vespa',
-    model: 'Vespa Primavera 150 I-Get',
-    category: 'classic',
-    engineCc: 150,
-    plateNumber: 'ZC-3209',
-    engineNo: 'M812M-1029411',
-    chassisNo: 'ZAPM812000004912',
-    dailyRate: 1100,
-    yearModel: 2025,
-    transmission: 'Automatic (CVT)',
-    fourPhotos: [
-      '/assets/images/bike_urban_scooter_1793338342006.jpg',
-      'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=900&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=900&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=900&auto=format&fit=crop&q=80'
-    ]
-  }
-];
+export interface DestinationBackground {
+  id: string;
+  name: string;
+  province: string;
+  tag: string;
+  description: string;
+  gradient: string;
+}
 
-type StudioBackground = 'showroom' | 'liwliwa_sunset' | 'siargao_palms' | 'mountain_twisties' | 'studio_white' | 'cyber_neon';
-
-const STUDIO_BACKGROUNDS: Record<StudioBackground, { name: string; tag: string; description: string; gradient: string }> = {
-  showroom: {
-    name: 'Showroom Studio',
-    tag: 'Flagship Dealership',
-    description: 'Crisp architectural concrete, glossy ground reflections, soft overhead light.',
-    gradient: 'linear-gradient(180deg, #18181b 0%, #27272a 40%, #3f3f46 65%, #09090b 100%)'
-  },
-  liwliwa_sunset: {
-    name: 'Liwliwa Beach Sunset',
-    tag: 'Zambales Coastal Vibe',
-    description: 'Warm golden hour sands, glowing orange sky, and ocean horizon tone.',
-    gradient: 'linear-gradient(180deg, #451a03 0%, #78350f 35%, #b45309 65%, #1c1917 100%)'
-  },
-  siargao_palms: {
-    name: 'Siargao Tropical Palms',
-    tag: 'Island Adventure',
-    description: 'Vibrant tropical green palms, sunlit road, and island holiday aesthetic.',
-    gradient: 'linear-gradient(180deg, #064e3b 0%, #047857 40%, #065f46 70%, #022c22 100%)'
-  },
-  mountain_twisties: {
-    name: 'Zambales Mountain Curves',
-    tag: 'Scenic Twisties',
-    description: 'Smooth mountain pass asphalt, cool mountain ridge breeze, adventure feel.',
-    gradient: 'linear-gradient(180deg, #0c4a6e 0%, #0369a1 40%, #334155 70%, #0f172a 100%)'
-  },
-  studio_white: {
-    name: 'Clean White E-Commerce',
-    tag: 'Catalog High-Key',
-    description: 'Pure seamless studio lighting with soft floor contact drop shadow.',
-    gradient: 'linear-gradient(180deg, #e4e4e7 0%, #f4f4f5 50%, #d4d4d8 100%)'
-  },
-  cyber_neon: {
-    name: 'Cyber Neon Night',
-    tag: 'Aesthetic Street',
-    description: 'Moody dark asphalt with vibrant cyan and violet street lamp highlights.',
-    gradient: 'linear-gradient(180deg, #1e1b4b 0%, #312e81 40%, #1e1b4b 80%, #020617 100%)'
-  }
+export const PROVINCE_BACKGROUNDS: Record<string, DestinationBackground[]> = {
+  'Showroom & Studio': [
+    {
+      id: 'showroom',
+      name: 'Showroom Studio',
+      province: 'Showroom & Studio',
+      tag: 'Flagship Dealership Floor',
+      description: 'Crisp architectural concrete, glossy ground reflections, soft overhead directional light.',
+      gradient: 'linear-gradient(180deg, #18181b 0%, #27272a 40%, #3f3f46 65%, #09090b 100%)'
+    },
+    {
+      id: 'studio_white',
+      name: 'Clean White E-Commerce',
+      province: 'Showroom & Studio',
+      tag: 'High-Key Commercial Catalog',
+      description: 'Pure seamless studio lighting with soft floor contact drop shadow.',
+      gradient: 'linear-gradient(180deg, #e4e4e7 0%, #f4f4f5 50%, #d4d4d8 100%)'
+    }
+  ],
+  'Zambales': [
+    {
+      id: 'liwliwa_sunset',
+      name: 'Liwliwa Beach Sunset',
+      province: 'Zambales',
+      tag: 'San Felipe Coastal Vibe',
+      description: 'Warm golden hour sands, glowing orange sky, and ocean horizon tone.',
+      gradient: 'linear-gradient(180deg, #451a03 0%, #78350f 35%, #b45309 65%, #1c1917 100%)'
+    },
+    {
+      id: 'subic_expressway',
+      name: 'Subic Bay Freeport Highway',
+      province: 'Zambales',
+      tag: 'Coastal Expressway',
+      description: 'Smooth highway asphalt along Subic Bay coastline with green palm backdrop.',
+      gradient: 'linear-gradient(180deg, #0c4a6e 0%, #0369a1 40%, #334155 70%, #0f172a 100%)'
+    },
+    {
+      id: 'anawangin_pines',
+      name: 'Anawangin Pine Cove',
+      province: 'Zambales',
+      tag: 'San Antonio Coastal Pines',
+      description: 'Evergreen pine needle canopy, volcanic mountain silhouettes, adventure setting.',
+      gradient: 'linear-gradient(180deg, #064e3b 0%, #047857 40%, #065f46 70%, #022c22 100%)'
+    }
+  ],
+  'Metro Manila': [
+    {
+      id: 'bgc_high_street',
+      name: 'BGC Bonifacio High Street',
+      province: 'Metro Manila',
+      tag: 'Taguig Urban Metropolis',
+      description: 'Modern glass towers, manicured palm sidewalks, contemporary street environment.',
+      gradient: 'linear-gradient(180deg, #1e1b4b 0%, #312e81 40%, #1e1b4b 80%, #020617 100%)'
+    },
+    {
+      id: 'intramuros_heritage',
+      name: 'Intramuros Historic Wall',
+      province: 'Metro Manila',
+      tag: 'Old Manila Cobblestone',
+      description: 'Spanish colonial cobblestone avenue, historic fortress stone walls, classic feel.',
+      gradient: 'linear-gradient(180deg, #78350f 0%, #92400e 35%, #451a03 65%, #1c1917 100%)'
+    },
+    {
+      id: 'manila_bay_sunset',
+      name: 'Manila Bay Boardwalk',
+      province: 'Metro Manila',
+      tag: 'Roxas Blvd Baywalk Sunset',
+      description: 'Famous Manila Bay orange and purple dusk glow over seaside boulevard.',
+      gradient: 'linear-gradient(180deg, #831843 0%, #be185d 35%, #b45309 65%, #0f172a 100%)'
+    }
+  ],
+  'Siargao': [
+    {
+      id: 'cloud_9_boardwalk',
+      name: 'Cloud 9 Boardwalk',
+      province: 'Siargao',
+      tag: 'General Luna Surf Hub',
+      description: 'Iconic timber surfing pier, rolling Pacific reef waves, tropical sunrise light.',
+      gradient: 'linear-gradient(180deg, #0e7490 0%, #06b6d4 40%, #164e63 70%, #082f49 100%)'
+    },
+    {
+      id: 'palm_tree_road',
+      name: 'Coconut Palm Highway',
+      province: 'Siargao',
+      tag: 'Dapa Island Curves',
+      description: 'Endless coconut palm tree lined road, vibrant green tropical canopy, holiday mood.',
+      gradient: 'linear-gradient(180deg, #064e3b 0%, #047857 40%, #065f46 70%, #022c22 100%)'
+    }
+  ],
+  'Cebu': [
+    {
+      id: 'osmena_peak',
+      name: 'Osmeña Peak Mountain Pass',
+      province: 'Cebu',
+      tag: 'Highland Twisties',
+      description: 'Cool mountain jagged hills, fresh highland breeze, scenic touring road.',
+      gradient: 'linear-gradient(180deg, #1e3a5f 0%, #2563eb 40%, #1e293b 70%, #0f172a 100%)'
+    },
+    {
+      id: 'moalboal_strip',
+      name: 'Moalboal Coastal Strip',
+      province: 'Cebu',
+      tag: 'Coastal Dive Town',
+      description: 'Relaxed beachfront motorcycle lane, turquoise sea backdrop, diver vibe.',
+      gradient: 'linear-gradient(180deg, #0284c7 0%, #38bdf8 40%, #0369a1 70%, #082f49 100%)'
+    }
+  ]
 };
 
 export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
@@ -188,7 +208,8 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
   const [photoRear, setPhotoRear] = useState<string>('');
 
   // Step 4: AI Photo Studio & Background Editor
-  const [selectedBg, setSelectedBg] = useState<StudioBackground>('showroom');
+  const [selectedBg, setSelectedBg] = useState<string>('showroom');
+  const [selectedProvince, setSelectedProvince] = useState<string>(currentBusiness.province || 'Zambales');
   const [brightness, setBrightness] = useState<number>(108);
   const [contrast, setContrast] = useState<number>(118);
   const [saturation, setSaturation] = useState<number>(115);
@@ -202,24 +223,26 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setCurrentStep('upload_cr');
-      // Default to first sample preset for ease
-      const preset = SAMPLE_CR_PRESETS[0];
-      setBrand(preset.brand);
-      setModel(preset.model);
-      setCategory(preset.category);
-      setEngineCc(preset.engineCc);
-      setPlateNumber(preset.plateNumber);
-      setEngineNo(preset.engineNo);
-      setChassisNo(preset.chassisNo);
-      setDailyRate(preset.dailyRate);
-      setYearModel(preset.yearModel);
-      setTransmission(preset.transmission);
+      setCrImageUrl(null);
+      setIsCrExtracted(false);
+      setSelectedProvince(currentBusiness.province || 'Zambales');
+      // Set initial defaults
+      setBrand('Honda');
+      setModel('Honda ADV 160 ABS');
+      setCategory('adventure');
+      setEngineCc(160);
+      setPlateNumber('NA-9482');
+      setEngineNo('KF18E-9214018');
+      setChassisNo('MH2KF1814PK081923');
+      setDailyRate(950);
+      setYearModel(2026);
+      setTransmission('Automatic (CVT)');
     }
-  }, [isOpen]);
+  }, [isOpen, currentBusiness.province]);
 
   if (!isOpen) return null;
 
-  // Handle CR File Upload (User custom image)
+  // Handle CR File Upload (User custom image or scan)
   const handleUploadCrFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -233,7 +256,7 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
     reader.readAsDataURL(file);
   };
 
-  // Simulate OCR scan
+  // Simulate OCR scan of official LTO government document
   const simulateCrOcrScan = (
     scannedBrand: string, 
     scannedModel: string, 
@@ -247,45 +270,24 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
     setTimeout(() => {
       setIsScanningCr(false);
       setIsCrExtracted(true);
-      showToast('LTO Certificate of Registration scanned & verified! Motorbike details extracted.', 'success');
+      showToast('Official LTO Certificate of Registration scanned & verified! Motorbike details extracted.', 'success');
     }, 700);
   };
 
-  // Load a sample LTO CR preset
-  const handleSelectCrPreset = (preset: SampleCrPreset) => {
-    const { crUrl } = generateLtoOrCrSvg({
-      plateNumber: preset.plateNumber,
-      modelName: preset.model,
-      engineNo: preset.engineNo,
-      chassisNo: preset.chassisNo,
-      businessName: currentBusiness.name || 'RideOUT Zambales',
-      expiryYear: preset.yearModel,
-    });
-
-    setCrImageUrl(crUrl);
-    setBrand(preset.brand);
-    setModel(preset.model);
-    setCategory(preset.category);
-    setEngineCc(preset.engineCc);
-    setPlateNumber(preset.plateNumber);
-    setEngineNo(preset.engineNo);
-    setChassisNo(preset.chassisNo);
-    setDailyRate(preset.dailyRate);
-    setYearModel(preset.yearModel);
-    setTransmission(preset.transmission);
-
-    simulateCrOcrScan(preset.brand, preset.model, preset.plateNumber, preset.engineNo, preset.chassisNo);
-  };
-
-  // Load 4-photo pack
+  // Load standard 4-photo pack for demonstration if physical camera is offline
   const handleLoadSamplePhotos = () => {
-    const matchingPreset = SAMPLE_CR_PRESETS.find(p => p.brand.toLowerCase() === brand.toLowerCase()) || SAMPLE_CR_PRESETS[0];
-    setPhotoFront(matchingPreset.fourPhotos[0]);
-    setPhotoLeft(matchingPreset.fourPhotos[1]);
-    setPhotoRight(matchingPreset.fourPhotos[2]);
-    setPhotoRear(matchingPreset.fourPhotos[3]);
-    setEnhancedHeroUrl(matchingPreset.fourPhotos[0]);
-    showToast('Loaded 4 required vehicle photos (Front, Left, Right, Rear)!', 'success');
+    const defaultFour = [
+      '/assets/images/bike_adventure_dual_1793338342581.jpg',
+      'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=900&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=900&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=900&auto=format&fit=crop&q=80'
+    ];
+    setPhotoFront(defaultFour[0]);
+    setPhotoLeft(defaultFour[1]);
+    setPhotoRight(defaultFour[2]);
+    setPhotoRear(defaultFour[3]);
+    setEnhancedHeroUrl(defaultFour[0]);
+    showToast('Attached 4 required vehicle photos (Front, Left, Right, Rear)!', 'success');
   };
 
   const handleIndividualPhotoUpload = (slot: 1 | 2 | 3 | 4, file: File) => {
@@ -331,8 +333,7 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
       canvas.width = 1200;
       canvas.height = 800;
 
-      // Draw background environment
-      const bgConfig = STUDIO_BACKGROUNDS[selectedBg];
+      // Draw background environment based on selected province destination
       if (selectedBg === 'showroom') {
         const bgGrad = ctx.createLinearGradient(0, 0, 0, 800);
         bgGrad.addColorStop(0, '#111827');
@@ -348,7 +349,7 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
         spotGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
         ctx.fillStyle = spotGrad;
         ctx.fillRect(0, 300, 1200, 500);
-      } else if (selectedBg === 'liwliwa_sunset') {
+      } else if (selectedBg === 'liwliwa_sunset' || selectedBg === 'manila_bay_sunset') {
         const bgGrad = ctx.createLinearGradient(0, 0, 0, 800);
         bgGrad.addColorStop(0, '#451a03');
         bgGrad.addColorStop(0.35, '#9a3412');
@@ -356,7 +357,7 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
         bgGrad.addColorStop(1, '#1c1917');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, 1200, 800);
-      } else if (selectedBg === 'siargao_palms') {
+      } else if (selectedBg === 'anawangin_pines' || selectedBg === 'palm_tree_road') {
         const bgGrad = ctx.createLinearGradient(0, 0, 0, 800);
         bgGrad.addColorStop(0, '#022c22');
         bgGrad.addColorStop(0.4, '#047857');
@@ -364,12 +365,28 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
         bgGrad.addColorStop(1, '#022c22');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, 1200, 800);
-      } else if (selectedBg === 'mountain_twisties') {
+      } else if (selectedBg === 'subic_expressway' || selectedBg === 'osmena_peak' || selectedBg === 'cloud_9_boardwalk' || selectedBg === 'moalboal_strip') {
         const bgGrad = ctx.createLinearGradient(0, 0, 0, 800);
         bgGrad.addColorStop(0, '#0c4a6e');
-        bgGrad.addColorStop(0.4, '#0369a1');
+        bgGrad.addColorStop(0.4, '#0284c7');
         bgGrad.addColorStop(0.7, '#1e293b');
         bgGrad.addColorStop(1, '#0f172a');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, 1200, 800);
+      } else if (selectedBg === 'bgc_high_street') {
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, 800);
+        bgGrad.addColorStop(0, '#1e1b4b');
+        bgGrad.addColorStop(0.4, '#312e81');
+        bgGrad.addColorStop(0.75, '#1e1b4b');
+        bgGrad.addColorStop(1, '#020617');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, 1200, 800);
+      } else if (selectedBg === 'intramuros_heritage') {
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, 800);
+        bgGrad.addColorStop(0, '#78350f');
+        bgGrad.addColorStop(0.35, '#92400e');
+        bgGrad.addColorStop(0.65, '#451a03');
+        bgGrad.addColorStop(1, '#1c1917');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, 1200, 800);
       } else if (selectedBg === 'studio_white') {
@@ -382,10 +399,10 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
         ctx.fill();
       } else {
         const bgGrad = ctx.createLinearGradient(0, 0, 0, 800);
-        bgGrad.addColorStop(0, '#1e1b4b');
-        bgGrad.addColorStop(0.45, '#312e81');
-        bgGrad.addColorStop(0.8, '#0f172a');
-        bgGrad.addColorStop(1, '#020617');
+        bgGrad.addColorStop(0, '#18181b');
+        bgGrad.addColorStop(0.4, '#27272a');
+        bgGrad.addColorStop(0.75, '#3f3f46');
+        bgGrad.addColorStop(1, '#09090b');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, 1200, 800);
       }
@@ -622,32 +639,20 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
                     />
                   </label>
 
-                  {/* Sample Philippine LTO Presets for Quick Demo */}
-                  <div className="space-y-2 pt-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block font-mono">
-                      Or select sample Philippine LTO certificate:
-                    </span>
-                    <div className="grid grid-cols-1 gap-2">
-                      {SAMPLE_CR_PRESETS.map((preset) => (
-                        <button
-                          key={preset.plateNumber}
-                          type="button"
-                          onClick={() => handleSelectCrPreset(preset)}
-                          className="p-2.5 rounded-xl bg-stone-950 hover:bg-stone-850 border border-stone-800 hover:border-amber-400 text-left transition-colors flex items-center justify-between text-xs group"
-                        >
-                          <div>
-                            <div className="font-bold text-stone-200 group-hover:text-amber-400 transition-colors">
-                              {preset.model}
-                            </div>
-                            <div className="text-[10px] text-stone-400 font-mono">
-                              Plate: {preset.plateNumber} · {preset.engineCc}cc · {preset.engineNo}
-                            </div>
-                          </div>
-                          <span className="text-[10px] px-2 py-0.5 rounded bg-stone-900 text-stone-300 font-mono border border-stone-700">
-                            Use Sample CR
-                          </span>
-                        </button>
-                      ))}
+                  {/* Philippine Government Compliance Notice & Upload Guidelines */}
+                  <div className="p-4 rounded-xl bg-stone-950 border border-stone-800 space-y-2.5">
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span className="font-bold text-xs text-stone-200">
+                        Official Government Document Requirement (LTO CR/OR)
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-stone-400 leading-relaxed">
+                      Under Philippine Republic Act 4136, all motorbikes and scooters must carry official government-issued registration documents. Scanned or photo copies of your original Certificate of Registration (CR) and Official Receipt (OR) are securely archived for road checkpoint verification and legally attached to digital customer rental waivers.
+                    </p>
+                    <div className="pt-1 flex items-center justify-between text-[10px] font-mono text-stone-400 border-t border-stone-850">
+                      <span>✓ LTO Checkpoint Compliant</span>
+                      <span className="text-amber-400">Automatic OCR OCR Extraction</span>
                     </div>
                   </div>
                 </div>
@@ -1097,21 +1102,48 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
                 
                 {/* Left: Background Preset Selector & Tuning Controls */}
                 <div className="sm:col-span-5 space-y-4">
-                  <div className="space-y-2">
-                    <span className="text-[11px] font-bold text-stone-300 uppercase tracking-wider block">
-                      Choose AI Background Environment:
-                    </span>
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-stone-300 uppercase tracking-wider block">
+                        Choose AI Background Environment:
+                      </span>
+                      <span className="text-[10px] font-mono text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+                        Local Destination Matched
+                      </span>
+                    </div>
+
+                    {/* Province Selector Filter Tabs */}
+                    <div className="flex flex-wrap gap-1 p-1 bg-stone-950 border border-stone-800 rounded-xl text-[11px]">
+                      {Object.keys(PROVINCE_BACKGROUNDS).map((prov) => {
+                        const isProvActive = selectedProvince === prov;
+                        return (
+                          <button
+                            key={prov}
+                            type="button"
+                            onClick={() => setSelectedProvince(prov)}
+                            className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+                              isProvActive
+                                ? 'bg-amber-400 text-stone-950 font-bold shadow-sm'
+                                : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+                            }`}
+                          >
+                            {prov}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Environment Options for Selected Province */}
                     <div className="grid grid-cols-1 gap-2">
-                      {(Object.keys(STUDIO_BACKGROUNDS) as StudioBackground[]).map((bgKey) => {
-                        const bg = STUDIO_BACKGROUNDS[bgKey];
-                        const isSelected = selectedBg === bgKey;
+                      {(PROVINCE_BACKGROUNDS[selectedProvince] || PROVINCE_BACKGROUNDS['Showroom & Studio']).map((bg) => {
+                        const isSelected = selectedBg === bg.id;
                         return (
                           <div
-                            key={bgKey}
-                            onClick={() => setSelectedBg(bgKey)}
+                            key={bg.id}
+                            onClick={() => setSelectedBg(bg.id)}
                             className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
                               isSelected 
-                                ? 'bg-amber-400/10 border-amber-400 text-white shadow-md' 
+                                ? 'bg-amber-400/10 border-amber-400 text-white shadow-md ring-1 ring-amber-400' 
                                 : 'bg-stone-950 border-stone-800 text-stone-300 hover:border-stone-700'
                             }`}
                           >

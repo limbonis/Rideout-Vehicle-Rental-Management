@@ -323,6 +323,15 @@ export interface GCashPaymentConfig {
   depositAmount: number; // in PHP, default 1000
 }
 
+export interface PayMayaPaymentConfig {
+  accountName: string; // e.g. "RIDEOUT ZAMBALES / MARK R."
+  accountNumber: string; // e.g. "0917 832 9900"
+  qrCodeUrl: string; // URL or base64 image data of Maya QR code
+  instructions?: string;
+  depositAmount: number; // in PHP, default 1000
+  isEnabled?: boolean;
+}
+
 export type SubscriptionStatus = 'trial' | 'active' | 'past_due' | 'pending_activation';
 export type SubscriptionTierKey = 'month_1_trial' | 'months_2_3' | 'months_4_6' | 'month_7_plus';
 
@@ -438,6 +447,8 @@ export interface RentalBusiness {
   primaryColor?: string; // Brand accent e.g. amber, emerald, blue, purple
   facebookBranding?: FacebookPageBranding;
   gcashConfig: GCashPaymentConfig;
+  paymayaConfig?: PayMayaPaymentConfig;
+  payoutMethodChoice?: 'gcash' | 'paymaya' | 'both';
   subscription: BusinessSubscription;
   customization: BusinessCustomization;
   staffUsers?: StaffUser[];
@@ -466,6 +477,15 @@ export interface RentalBusiness {
     instagram?: string;
     whatsapp?: string;
     tiktok?: string;
+    viber?: string;
+    telegram?: string;
+  };
+  nominatedServerPhone?: string;
+  androidGatewayConfig?: {
+    serverPhone: string;
+    hasInternetConnection: boolean;
+    nativeMessagingActive: boolean;
+    appInstalledOnServerPhone: boolean;
   };
   googleIntegration?: GoogleAccountIntegration;
 }
@@ -561,6 +581,11 @@ export interface GoogleAccountIntegration {
   driveFolderUrl?: string;
   lastSyncedAt?: string;
   syncedRowCount?: number;
+  scopesGranted?: string[];
+  permissionsGranted?: {
+    driveCreateFilesAndFolders: boolean;
+    sheetsManageDatabase: boolean;
+  };
   googleBusinessProfileLinked?: boolean;
   googleBusinessProfileName?: string;
   googleBusinessRating?: number;
