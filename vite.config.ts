@@ -11,12 +11,12 @@ export default defineConfig(() => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['icon.svg', 'manifest.json'],
+        includeAssets: ['icon.svg', 'manifest.json', 'pwa-192x192.png', 'pwa-512x512.png', 'apple-touch-icon.png'],
         manifest: {
           id: '/',
           name: 'Rideout Rentals - Vehicle Rental Management System',
           short_name: 'Rideout',
-          description: 'Multi-tenant vehicle rental management system featuring online bookings, 360 inspections, fleet tracking, and depot operations.',
+          description: 'Vehicle rental management system featuring online bookings, 360 inspections, fleet tracking, and depot operations.',
           theme_color: '#0c0a09',
           background_color: '#0c0a09',
           display: 'standalone',
@@ -24,16 +24,28 @@ export default defineConfig(() => {
           scope: '/',
           icons: [
             {
-              src: '/icon.svg',
-              sizes: '192x192 512x512',
-              type: 'image/svg+xml',
+              src: '/pwa-192x192.png',
+              sizes: '192x192',
+              type: 'image/png',
               purpose: 'any',
+            },
+            {
+              src: '/pwa-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'any',
+            },
+            {
+              src: '/pwa-maskable-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable',
             },
             {
               src: '/icon.svg',
               sizes: '192x192 512x512',
               type: 'image/svg+xml',
-              purpose: 'maskable',
+              purpose: 'any',
             },
           ],
         },

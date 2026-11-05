@@ -447,6 +447,20 @@ export interface RentalBusiness {
   province?: string;
   coordinates?: { lat: number; lng: number };
   googleMapsPinUrl?: string;
+  depotPhotoUrl?: string; // Physical picture of the depot facade / entrance for renters to locate shop
+  ownerIdPhotoUrl?: string; // Uploaded Government ID of owner
+  ownerIdType?: string;
+  ownerIdNumber?: string;
+  emailVerified?: boolean;
+  vehicleInventoryCounts?: {
+    hasBicycles: boolean;
+    bicyclesQty: number;
+    hasMotorbikes: boolean;
+    motorbikesQty: number;
+    hasCars: boolean;
+    carsQty: number;
+  };
+  staffCount?: number;
   socials?: {
     facebook?: string;
     instagram?: string;

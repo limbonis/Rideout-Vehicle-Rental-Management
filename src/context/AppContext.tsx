@@ -170,12 +170,27 @@ interface AppContextType {
     coordinates?: { lat: number; lng: number };
     googleMapsPinUrl?: string;
     targetedNearbyTowns?: string[];
+    depotPhotoUrl?: string;
+    ownerIdPhotoUrl?: string;
+    ownerIdType?: string;
+    ownerIdNumber?: string;
+    emailVerified?: boolean;
+    vehicleInventoryCounts?: {
+      hasBicycles: boolean;
+      bicyclesQty: number;
+      hasMotorbikes: boolean;
+      motorbikesQty: number;
+      hasCars: boolean;
+      carsQty: number;
+    };
+    staffCount?: number;
     socials?: {
       facebook?: string;
       instagram?: string;
       whatsapp?: string;
       tiktok?: string;
     };
+    facebookBranding?: FacebookPageBranding;
     googleIntegration?: {
       sheetsAuthorized: boolean;
       driveAuthorized: boolean;
@@ -977,12 +992,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     coordinates?: { lat: number; lng: number };
     googleMapsPinUrl?: string;
     targetedNearbyTowns?: string[];
+    depotPhotoUrl?: string;
+    ownerIdPhotoUrl?: string;
+    ownerIdType?: string;
+    ownerIdNumber?: string;
+    emailVerified?: boolean;
+    vehicleInventoryCounts?: {
+      hasBicycles: boolean;
+      bicyclesQty: number;
+      hasMotorbikes: boolean;
+      motorbikesQty: number;
+      hasCars: boolean;
+      carsQty: number;
+    };
+    staffCount?: number;
     socials?: {
       facebook?: string;
       instagram?: string;
       whatsapp?: string;
       tiktok?: string;
     };
+    facebookBranding?: FacebookPageBranding;
     googleIntegration?: {
       sheetsAuthorized: boolean;
       driveAuthorized: boolean;
@@ -1007,11 +1037,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const trialEnd = new Date();
     trialEnd.setDate(today.getDate() + 30); // 30-day free trial
 
+    // Initial staff seats allocation
+    const staffCount = data.staffCount || 2;
+    const initialStaffUsers: StaffUser[] = Array.from({ length: staffCount }).map((_, idx) => ({
+      id: `staff-${id}-${idx + 1}`,
+      businessId: id,
+      name: idx === 0 ? `${data.ownerName} (Manager)` : `Depot Front Desk Staff ${idx}`,
+      email: idx === 0 ? data.email : `staff${idx}@${slug}.ph`,
+      mobile: data.mobile,
+      role: idx === 0 ? 'manager' : 'staff',
+      title: idx === 0 ? 'Depot Operations Manager' : 'Vehicle Inspection & Counter Specialist',
+      isActive: true,
+      permissions: {
+        canInspectPickups: true,
+        canApproveReturns: idx === 0,
+        canManageFleet: idx === 0,
+        canManageSettings: idx === 0,
+        canViewFinancialReports: idx === 0,
+        canAcceptCashHandover: true,
+        canManageSmartPricing: idx === 0,
+        canAccessSocialInbox: true,
+      },
+      createdAt: today.toISOString(),
+    }));
+
     const newBiz: RentalBusiness = {
       id,
       name: data.name,
       slug,
-      tagline: data.tagline || 'Motorbike Rentals & Coastal Adventures',
+      tagline: data.tagline || `${data.name} · Vehicle Fleet & Rental Depot`,
       ownerName: data.ownerName,
       email: data.email,
       mobile: data.mobile,
@@ -1020,27 +1074,45 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       province: data.province || 'Zambales',
       coordinates: data.coordinates || { lat: 15.0683, lng: 120.0601 },
       googleMapsPinUrl: data.googleMapsPinUrl || '',
-      logoUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=200&auto=format&fit=crop&q=80',
-      coverPhotoUrl: '/assets/images/hero_coastal_ride_1793338340532.jpg',
+      depotPhotoUrl: data.depotPhotoUrl || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&auto=format&fit=crop&q=80',
+      ownerIdPhotoUrl: data.ownerIdPhotoUrl,
+      ownerIdType: data.ownerIdType || "Driver's License",
+      ownerIdNumber: data.ownerIdNumber,
+      emailVerified: data.emailVerified ?? true,
+      vehicleInventoryCounts: data.vehicleInventoryCounts || {
+        hasBicycles: true,
+        bicyclesQty: 4,
+        hasMotorbikes: true,
+        motorbikesQty: 6,
+        hasCars: true,
+        carsQty: 2,
+      },
+      staffCount,
+      staffUsers: initialStaffUsers,
+      logoUrl: data.facebookBranding?.pageUrl ? 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=200&auto=format&fit=crop&q=80' : 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=200&auto=format&fit=crop&q=80',
+      coverPhotoUrl: data.depotPhotoUrl || '/assets/images/hero_coastal_ride_1793338340532.jpg',
       primaryColor: '#f59e0b',
       isFlagship: false,
       socials: data.socials,
       googleIntegration: data.googleIntegration ? {
         isConnected: Boolean(data.googleIntegration.sheetsAuthorized || data.googleIntegration.driveAuthorized),
         email: data.email,
-        spreadsheetUrl: data.googleIntegration.spreadsheetUrl || `https://docs.google.com/spreadsheets/d/mock-${id}`,
-        driveFolderUrl: data.googleIntegration.driveFolderUrl || `https://drive.google.com/drive/folders/mock-${id}`,
+        spreadsheetUrl: data.googleIntegration.spreadsheetUrl || `https://docs.google.com/spreadsheets/d/${slug}-ledger`,
+        driveFolderUrl: data.googleIntegration.driveFolderUrl || `https://drive.google.com/drive/folders/${slug}-archive`,
         lastSyncedAt: today.toISOString(),
         syncedRowCount: 0,
       } : undefined,
-      facebookBranding: data.facebookPageUrl || data.socials?.facebook ? {
+      facebookBranding: data.facebookBranding || (data.facebookPageUrl || data.socials?.facebook ? {
         pageUrl: data.facebookPageUrl || data.socials?.facebook || '',
         pageName: data.name,
-        pageCategory: 'Motorcycle Rental',
-        followersCount: 1500,
-        aboutText: `${data.name} in ${data.location}.`,
+        pageCategory: 'Motorcycle & Vehicle Rental',
+        followersCount: 3800,
+        aboutText: `${data.name} located in ${data.location}. Full fleet with 360° inspections.`,
         importedAt: today.toISOString(),
-      } : undefined,
+        isConnected: true,
+        inboxSynced: true,
+        pageId: `fb-${slug}`,
+      } : undefined),
       gcashConfig: {
         accountName: data.gcashAccountName || data.name.toUpperCase(),
         accountNumber: data.gcashAccountNumber || data.mobile,
