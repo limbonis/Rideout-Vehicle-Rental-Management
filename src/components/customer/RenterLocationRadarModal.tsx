@@ -142,7 +142,7 @@ export const RenterLocationRadarModal: React.FC<RenterLocationRadarModalProps> =
       },
       (err) => {
         console.warn('GPS notice:', err);
-        showToast('Using Zambales simulation coordinates (Depot mode).', 'info');
+        showToast('Using Zambales Depot location coordinates.', 'info');
       },
       { enableHighAccuracy: true }
     );

@@ -216,52 +216,8 @@ export const GoogleOAuthSubscribeModal: React.FC<GoogleOAuthSubscribeModalProps>
               </p>
             </div>
 
-            {/* Quick Demo Test Accounts */}
-            <div className="pt-2 border-t border-stone-800 space-y-2">
-              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block font-mono">
-                Quick test with active accounts:
-              </span>
-              <div className="grid grid-cols-1 gap-1.5 text-xs">
-                <button
-                  type="button"
-                  onClick={() => handleAttemptLogin('rideoutzambales@gmail.com')}
-                  className="p-2.5 rounded-xl bg-stone-950 hover:bg-stone-850 border border-stone-800 hover:border-amber-400/50 text-left transition-all flex items-center justify-between group"
-                >
-                  <div className="truncate">
-                    <span className="font-bold text-stone-200 group-hover:text-amber-400 block text-xs">
-                      RideOUT Zambales
-                    </span>
-                    <span className="text-[11px] font-mono text-stone-400">
-                      rideoutzambales@gmail.com
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold shrink-0">
-                    Active Depot
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleAttemptLogin('jibmaxatnewroad@gmail.com')}
-                  className="p-2.5 rounded-xl bg-stone-950 hover:bg-stone-850 border border-stone-800 hover:border-amber-400/50 text-left transition-all flex items-center justify-between group"
-                >
-                  <div className="truncate">
-                    <span className="font-bold text-stone-200 group-hover:text-amber-400 block text-xs">
-                      Platform Owner Account
-                    </span>
-                    <span className="text-[11px] font-mono text-stone-400">
-                      jibmaxatnewroad@gmail.com
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold shrink-0">
-                    Dev Owner
-                  </span>
-                </button>
-              </div>
-            </div>
-
             {/* Link to Sign-Up / Choice Mode */}
-            <div className="pt-1 text-center">
+            <div className="pt-2 text-center border-t border-stone-800">
               <button
                 type="button"
                 onClick={() => setModalMode('role_select')}

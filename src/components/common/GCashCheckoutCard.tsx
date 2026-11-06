@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { GCashPaymentConfig } from '../../types';
 import { generateGCashQRSvg, openGCashMobileApp } from '../../utils/gcashHelper';
 import { GCashPaymentModal } from './GCashPaymentModal';
-import { 
-  SAMPLE_PAYMENT_CONFIRMATIONS, 
-  SamplePaymentSlip 
-} from '../../utils/paymentConfirmationHelper';
+
 import { 
   Smartphone, 
   Copy, 
@@ -132,23 +129,6 @@ export const GCashCheckoutCard: React.FC<GCashCheckoutCardProps> = ({
       }, 700);
     };
     reader.readAsDataURL(file);
-  };
-
-  const handleSelectSampleSlip = (sample: SamplePaymentSlip) => {
-    onPaymentProofChange?.(sample.imageUrl);
-    onReferenceNumberChange(sample.refNumber);
-    onPayerAccountNameChange?.(sample.senderLabel);
-    onPaymentProofTypeChange?.(sample.type);
-
-    if (sample.type === 'bank-transfer') {
-      setSelectedSource('bank-instapay');
-    } else if (sample.type === 'third-party-gcash') {
-      setSelectedSource('third-party');
-    } else {
-      setSelectedSource('own-gcash');
-    }
-
-    showToast?.(`Attached sample: ${sample.title} with Ref #${sample.refNumber}`, 'success');
   };
 
   return (
@@ -403,33 +383,6 @@ export const GCashCheckoutCard: React.FC<GCashCheckoutCardProps> = ({
             />
           </div>
         )}
-
-        {/* Sample Payment Slips for Quick 1-Click Testing */}
-        <div className="space-y-1">
-          <span className="text-[10px] text-stone-500">Test or preview sample transfer confirmations:</span>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {SAMPLE_PAYMENT_CONFIRMATIONS.map((sample) => (
-              <button
-                key={sample.id}
-                type="button"
-                onClick={() => handleSelectSampleSlip(sample)}
-                className={`p-2 rounded-lg border text-left transition-colors flex items-center gap-2 ${
-                  paymentProofUrl === sample.imageUrl
-                    ? 'bg-blue-950/40 border-blue-400 text-blue-200'
-                    : 'bg-stone-950 border-stone-800 text-stone-300 hover:border-stone-700'
-                }`}
-              >
-                <div className="w-6 h-6 rounded bg-stone-800 flex items-center justify-center shrink-0 text-xs">
-                  {sample.type === 'bank-transfer' ? '🏦' : '📱'}
-                </div>
-                <div className="truncate flex-1">
-                  <div className="text-[11px] font-semibold truncate">{sample.title}</div>
-                  <div className="text-[9px] text-stone-400 font-mono truncate">Ref: {sample.refNumber}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Upload Receipt Action & Preview */}
         <div className="space-y-2">

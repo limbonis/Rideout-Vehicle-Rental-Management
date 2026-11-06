@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { SAMPLE_LICENSES, validateLicenseCodes, validatePhilippineMobile } from '../../utils/licenseValidator';
+import { validateLicenseCodes, validatePhilippineMobile } from '../../utils/licenseValidator';
 import { 
   X, 
   Calendar, 
@@ -124,21 +124,7 @@ export const NewReservationModal: React.FC<NewReservationModalProps> = ({
   // Phone validation
   const phoneValidation = validatePhilippineMobile(customerPhone);
 
-  // Handle Driver License Upload or Sample Selection
-  const handleSelectSampleLicense = (sample: typeof SAMPLE_LICENSES[0]) => {
-    setLicenseImageUrl(sample.imageUrl);
-    setCustomerName(sample.name);
-    setCustomerLicenseNumber(sample.licenseNo);
-    setDriverLicenseCodes(sample.codes);
-    const isValid = validateLicenseCodes(sample.codes);
-    setLicenseValidated(isValid);
-
-    if (isValid) {
-      showToast(`Driver's license verified: Motorcycle authorized (Codes: ${sample.codes.join(', ')})`, 'success');
-    } else {
-      showToast(`Warning: License lacks Code A or A1! Motorcycle driving prohibited.`, 'error');
-    }
-  };
+  // Handle Driver License Upload & Verification
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -313,26 +299,6 @@ export const NewReservationModal: React.FC<NewReservationModalProps> = ({
             <p className="text-stone-400 text-xs leading-relaxed">
               Upload the front of the driver's license. The system scans and verifies <strong className="text-stone-200">DL Code A or A1</strong> (motorcycle authorization) and automatically extracts the renter's full name.
             </p>
-
-            {/* Quick Test Samples */}
-            <div className="space-y-1.5">
-              <span className="text-[11px] text-stone-500 font-medium">Quick sample cards for testing:</span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                {SAMPLE_LICENSES.map((s, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => handleSelectSampleLicense(s)}
-                    className="p-2 rounded border border-stone-800 bg-stone-900 hover:border-amber-400/60 text-left transition-colors"
-                  >
-                    <div className="font-semibold text-stone-200 truncate">{s.name}</div>
-                    <div className="text-[10px] text-stone-400 font-mono mt-0.5">
-                      Codes: {s.codes.join(', ')} · {s.valid ? 'Motorcycle OK' : 'Car Only'}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
 
             {/* File Upload Drop Zone */}
             <div className="mt-3">

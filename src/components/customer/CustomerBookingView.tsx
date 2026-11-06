@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Motorbike, Reservation } from '../../types';
-import { SAMPLE_LICENSES, validateLicenseCodes, validatePhilippineMobile } from '../../utils/licenseValidator';
-import { 
-  SAMPLE_PAYMENT_CONFIRMATIONS, 
-  SamplePaymentSlip 
-} from '../../utils/paymentConfirmationHelper';
+import { validateLicenseCodes, validatePhilippineMobile } from '../../utils/licenseValidator';
 import { 
   Bike, 
   MapPin, 
@@ -189,59 +185,6 @@ export const CustomerBookingView: React.FC = () => {
     setConfirmedBookingRef(null);
     setStep(1);
     setIsBookingOpen(true);
-  };
-
-  const handleQuickFillDemo = () => {
-    const sample = SAMPLE_LICENSES[0]; // Juan Dela Cruz
-    setLicenseImageUrl(sample.imageUrl);
-    setCustomerName(sample.name);
-    setCustomerLicenseNumber(sample.licenseNo);
-    setDriverLicenseCodes(sample.codes);
-    setLicenseValidated(true);
-    setIsFacebookConnected(true);
-    setCustomerEmail('juan.delacruz@gmail.com');
-    setCustomerPhone('09178829911');
-    setPreferredContactMode('whatsapp');
-    setPreferredContactHandle('09178829911');
-    setFacebookPageLiked(true);
-    setFacebookAlertsPermitted(true);
-    
-    // Auto-apply RIDEOUT15 promo
-    const res = validatePromoCode('RIDEOUT15', totalDays, baseSubtotal);
-    if (res.valid) {
-      setAppliedPromo('RIDEOUT15');
-      setDiscountAmount(res.discount);
-      setPromoInput('RIDEOUT15');
-      setPromoMessage(res.message);
-    }
-
-    if (activeAddOnsList.length > 0) {
-      setSelectedAddOnIds([activeAddOnsList[0].id]);
-    }
-
-    // Attach sample transfer confirmation slip
-    const sampleSlip = SAMPLE_PAYMENT_CONFIRMATIONS[0];
-    setPaymentProofUrl(sampleSlip.imageUrl);
-    setPayerAccountName('Juan Dela Cruz (0917 882 9911)');
-    setGcashReferenceNumber(sampleSlip.refNumber);
-    setPaymentProofType('gcash-screenshot');
-
-    showToast(`Autofilled demo customer Juan Dela Cruz with verified Code A/A1 DL, FB alerts, and GCash proof!`, 'success');
-  };
-
-  const handleSelectSampleLicense = (sample: typeof SAMPLE_LICENSES[0]) => {
-    setLicenseImageUrl(sample.imageUrl);
-    setCustomerName(sample.name);
-    setCustomerLicenseNumber(sample.licenseNo);
-    setDriverLicenseCodes(sample.codes);
-    const isValid = validateLicenseCodes(sample.codes);
-    setLicenseValidated(isValid);
-
-    if (isValid) {
-      showToast(`Driver's license verified! Name: ${sample.name}. Code A/A1 authorized.`, 'success');
-    } else {
-      showToast(`Warning: Selected license lacks motorcycle Code A or A1!`, 'error');
-    }
   };
 
   const handleGetGpsLocation = () => {
@@ -1325,20 +1268,6 @@ export const CustomerBookingView: React.FC = () => {
             ) : (
               /* Steps 1 & 2 */
               <form onSubmit={handleConfirmReservation} className="p-6 space-y-5 text-xs max-h-[80vh] overflow-y-auto">
-                {/* Demo Quick-Fill Top Button */}
-                <div className="p-2.5 rounded-lg bg-amber-400/10 border border-amber-400/30 flex items-center justify-between text-xs">
-                  <span className="text-amber-300">
-                    Testing as a customer? <strong>Fast 1-click test fill:</strong>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleQuickFillDemo}
-                    className="px-3 py-1 bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold rounded text-[11px] shadow-sm transition-colors flex items-center gap-1"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Autofill Juan Dela Cruz</span>
-                  </button>
-                </div>
 
                 <div className="flex items-center justify-between text-xs text-stone-400 pb-2 border-b border-stone-800">
                   <span>Step {step} of 2</span>
@@ -1507,26 +1436,6 @@ export const CustomerBookingView: React.FC = () => {
                       <p className="text-stone-400 text-xs">
                         Philippine law requires <strong>Code A or A1</strong> under DL Codes on the front of your license. We extract your name automatically.
                       </p>
-
-                      {/* Sample Selector */}
-                      <div className="space-y-1">
-                        <span className="text-[10px] text-stone-500">Click a sample license to test:</span>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                          {SAMPLE_LICENSES.map((s, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              onClick={() => handleSelectSampleLicense(s)}
-                              className="p-2 rounded border border-stone-800 bg-stone-950 text-left hover:border-amber-400/60"
-                            >
-                              <div className="font-semibold text-stone-200 truncate">{s.name}</div>
-                              <div className="text-[10px] text-stone-400 font-mono">
-                                DL: {s.codes.join(', ')} ({s.valid ? 'OK' : 'Invalid'})
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
 
                       {/* File upload with OCR Reading & Auto-fill */}
                       <label className="border-2 border-dashed border-stone-700 hover:border-amber-400 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer bg-stone-950 transition-colors text-center">
