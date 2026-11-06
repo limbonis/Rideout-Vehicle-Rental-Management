@@ -19,8 +19,10 @@ import {
   ProximityAlertEvent,
   SmartPricingConfig,
   SocialChatThread,
-  FacebookPageBranding
+  FacebookPageBranding,
+  DepotLocation
 } from '../types';
+import { t as translateHelper } from '../utils/currencyAndLanguage';
 import { 
   INITIAL_BIKES, 
   INITIAL_RESERVATIONS, 
@@ -214,7 +216,23 @@ interface AppContextType {
       hasInternetConnection: boolean;
       nativeMessagingActive: boolean;
       appInstalledOnServerPhone: boolean;
+      permissionsAuthorized?: boolean;
+      permissionsDate?: string;
     };
+    ownerIdExpiration?: string;
+    depots?: DepotLocation[];
+    allowDifferentReturnDepot?: boolean;
+    interDepotTransferFee?: number;
+    fleetVehicles?: Array<Partial<Motorbike>>;
+    staffUsersList?: Array<{
+      name: string;
+      email: string;
+      mobile?: string;
+      idNumber?: string;
+      idCardPhotoUrl?: string;
+      role: 'manager' | 'staff';
+      permissions?: any;
+    }>;
     firstVehicle?: {
       name: string;
       brand: string;
@@ -225,9 +243,16 @@ interface AppContextType {
       imageUrl: string;
       plateNumber: string;
       registrationDocs?: any;
+      depotId?: string;
     };
   }) => string;
   isPlatformAdmin: boolean;
+  isPlatformOwner: boolean;
+  businessBikes: Motorbike[];
+  businessReservations: Reservation[];
+  moveBikeDepot: (bikeId: string, targetDepotId: string) => void;
+  updateBusinessDepots: (businessId: string, depots: DepotLocation[]) => void;
+  t: (key: string) => string;
 
   // Currency & Language (Southeast Asia defaults: PHP & en)
   currency: SupportedCurrency;
@@ -475,6 +500,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const currentBusiness = businesses.find((b) => b.id === currentBusinessId) || businesses[0] || INITIAL_BUSINESSES[0];
   const isPlatformAdmin = Boolean(currentBusiness.isFlagship);
+  const isPlatformOwner = currentUser?.email?.trim().toLowerCase() === 'rideoutzambales@gmail.com' || Boolean(currentBusiness.isFlagship);
+
+  // Scoped fleet & reservations for current logged in business (guarantees newly registered businesses start clean with 0 bookings)
+  const businessBikes = bikes.filter((b) => b.businessId === currentBusiness.id);
+  const businessReservations = reservations.filter((r) => r.businessId === currentBusiness.id);
+
+  const t = (key: string) => translateHelper(key, language);
+
+  const moveBikeDepot = (bikeId: string, targetDepotId: string) => {
+    setBikes((prev) =>
+      prev.map((b) => {
+        if (b.id === bikeId) {
+          const targetDepot = currentBusiness.depots?.find((d) => d.id === targetDepotId);
+          return {
+            ...b,
+            depotId: targetDepotId,
+            depotName: targetDepot?.name || 'Main Depot',
+          };
+        }
+        return b;
+      })
+    );
+    showToast('Vehicle active location moved to new depot!', 'success');
+  };
+
+  const updateBusinessDepots = (businessId: string, depots: DepotLocation[]) => {
+    setBusinesses((prev) =>
+      prev.map((b) => (b.id === businessId ? { ...b, depots } : b))
+    );
+    showToast('Depot branches updated successfully!', 'success');
+  };
 
   // Sync to localStorage
   useEffect(() => {
@@ -1054,7 +1110,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       hasInternetConnection: boolean;
       nativeMessagingActive: boolean;
       appInstalledOnServerPhone: boolean;
+      permissionsAuthorized?: boolean;
+      permissionsDate?: string;
     };
+    ownerIdExpiration?: string;
+    depots?: DepotLocation[];
+    allowDifferentReturnDepot?: boolean;
+    interDepotTransferFee?: number;
+    fleetVehicles?: Array<Partial<Motorbike>>;
+    staffUsersList?: Array<{
+      name: string;
+      email: string;
+      mobile?: string;
+      idNumber?: string;
+      idCardPhotoUrl?: string;
+      role: 'manager' | 'staff';
+      permissions?: any;
+    }>;
     firstVehicle?: {
       name: string;
       brand: string;
@@ -1065,6 +1137,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       imageUrl: string;
       plateNumber: string;
       registrationDocs?: any;
+      depotId?: string;
     };
   }): string => {
     const id = `biz-${Date.now()}`;
@@ -1073,29 +1146,71 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const trialEnd = new Date();
     trialEnd.setDate(today.getDate() + 30); // 30-day free trial
 
-    // Initial staff seats allocation
-    const staffCount = data.staffCount || 2;
-    const initialStaffUsers: StaffUser[] = Array.from({ length: staffCount }).map((_, idx) => ({
-      id: `staff-${id}-${idx + 1}`,
-      businessId: id,
-      name: idx === 0 ? `${data.ownerName} (Manager)` : `Depot Front Desk Staff ${idx}`,
-      email: idx === 0 ? data.email : `staff${idx}@${slug}.ph`,
-      mobile: data.mobile,
-      role: idx === 0 ? 'manager' : 'staff',
-      title: idx === 0 ? 'Depot Operations Manager' : 'Vehicle Inspection & Counter Specialist',
-      isActive: true,
-      permissions: {
-        canInspectPickups: true,
-        canApproveReturns: idx === 0,
-        canManageFleet: idx === 0,
-        canManageSettings: idx === 0,
-        canViewFinancialReports: idx === 0,
-        canAcceptCashHandover: true,
-        canManageSmartPricing: idx === 0,
-        canAccessSocialInbox: true,
-      },
-      createdAt: today.toISOString(),
-    }));
+    // Multi-depot setup: use provided depots or initialize primary depot
+    const resolvedDepots: DepotLocation[] = (data.depots && data.depots.length > 0)
+      ? data.depots
+      : [
+          {
+            id: `depot-${id}-1`,
+            name: `${data.name} Main Depot`,
+            address: data.location,
+            town: data.town || 'San Felipe',
+            province: data.province || 'Zambales',
+            coordinates: data.coordinates || { lat: 15.0683, lng: 120.0601 },
+            googleMapsPinUrl: data.googleMapsPinUrl || `https://maps.google.com/?q=${data.coordinates?.lat || 15.0683},${data.coordinates?.lng || 120.0601}`,
+            storefrontPhotoUrl: data.depotPhotoUrl,
+            contactPhone: data.mobile,
+            isPrimary: true,
+          }
+        ];
+
+    // Staff seats allocation
+    const staffCount = data.staffUsersList ? data.staffUsersList.length : (data.staffCount || 2);
+    const initialStaffUsers: StaffUser[] = data.staffUsersList && data.staffUsersList.length > 0
+      ? data.staffUsersList.map((s, idx) => ({
+          id: `staff-${id}-${idx + 1}`,
+          businessId: id,
+          name: s.name,
+          email: s.email,
+          mobile: s.mobile || data.mobile,
+          role: s.role || (idx === 0 ? 'manager' : 'staff'),
+          title: idx === 0 ? 'Depot Operations Manager' : 'Vehicle Inspection & Counter Receptionist',
+          idCardPhotoUrl: s.idCardPhotoUrl,
+          idNumber: s.idNumber,
+          isActive: true,
+          permissions: s.permissions || {
+            canInspectPickups: true,
+            canApproveReturns: idx === 0,
+            canManageFleet: idx === 0,
+            canManageSettings: idx === 0,
+            canViewFinancialReports: idx === 0,
+            canAcceptCashHandover: true,
+            canManageSmartPricing: idx === 0,
+            canAccessSocialInbox: true,
+          },
+          createdAt: today.toISOString(),
+        }))
+      : Array.from({ length: staffCount }).map((_, idx) => ({
+          id: `staff-${id}-${idx + 1}`,
+          businessId: id,
+          name: idx === 0 ? `${data.ownerName} (Manager)` : `Depot Front Desk Staff ${idx}`,
+          email: idx === 0 ? data.email : `staff${idx}@${slug}.ph`,
+          mobile: data.mobile,
+          role: idx === 0 ? 'manager' : 'staff',
+          title: idx === 0 ? 'Depot Operations Manager' : 'Vehicle Inspection & Counter Specialist',
+          isActive: true,
+          permissions: {
+            canInspectPickups: true,
+            canApproveReturns: idx === 0,
+            canManageFleet: idx === 0,
+            canManageSettings: idx === 0,
+            canViewFinancialReports: idx === 0,
+            canAcceptCashHandover: true,
+            canManageSmartPricing: idx === 0,
+            canAccessSocialInbox: true,
+          },
+          createdAt: today.toISOString(),
+        }));
 
     const newBiz: RentalBusiness = {
       id,
@@ -1114,7 +1229,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ownerIdPhotoUrl: data.ownerIdPhotoUrl,
       ownerIdType: data.ownerIdType || "Driver's License",
       ownerIdNumber: data.ownerIdNumber,
+      ownerIdExpiration: data.ownerIdExpiration,
       emailVerified: data.emailVerified ?? true,
+      depots: resolvedDepots,
+      allowDifferentReturnDepot: data.allowDifferentReturnDepot ?? true,
+      interDepotTransferFee: data.interDepotTransferFee ?? 200,
       vehicleInventoryCounts: data.vehicleInventoryCounts || {
         hasBicycles: true,
         bicyclesQty: 4,
@@ -1125,9 +1244,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       },
       staffCount,
       staffUsers: initialStaffUsers,
-      logoUrl: data.facebookBranding?.pageUrl ? 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=200&auto=format&fit=crop&q=80' : 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=200&auto=format&fit=crop&q=80',
+      logoUrl: data.facebookBranding?.pageUrl ? '/assets/aistudio/rideout-icon-mark-transparent_40eb04ee.png' : '/assets/aistudio/rideout-icon-mark-transparent_40eb04ee.png',
       coverPhotoUrl: data.depotPhotoUrl || '/assets/images/hero_coastal_ride_1793338340532.jpg',
-      primaryColor: '#f59e0b',
+      primaryColor: '#1c6170',
       isFlagship: false,
       socials: data.socials,
       payoutMethodChoice: data.payoutMethodChoice || 'gcash',
@@ -1202,10 +1321,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setBusinesses((prev) => [...prev, newBiz]);
 
-    // If first vehicle was configured in the onboarding wizard, add it to fleet inventory
-    if (data.firstVehicle) {
+    // Populate initial fleet vehicles assigned to this business and its depot locations
+    if (data.fleetVehicles && data.fleetVehicles.length > 0) {
+      const newBikes: Motorbike[] = data.fleetVehicles.map((v, idx) => ({
+        id: `bike-${id}-${idx + 1}`,
+        name: v.name || 'Honda Click 125i',
+        brand: v.brand || 'Honda',
+        model: v.model || 'Click 125i',
+        category: (v.category as any) || 'scooter',
+        engineCc: v.engineCc || 125,
+        plateNumber: v.plateNumber || `TEMP-${Math.floor(1000 + Math.random() * 9000)}`,
+        dailyRate: v.dailyRate || 500,
+        weeklyRate: (v.dailyRate || 500) * 6,
+        currentMileage: 1200,
+        nextServiceMileage: 4000,
+        fuelLevel: 100,
+        status: 'available',
+        imageUrl: v.imageUrl || '/assets/images/bike_urban_scooter_1793338342006.jpg',
+        features: ['LED Headlight', 'Under-seat Helmet Storage', 'LTO Registered', 'USB Charger'],
+        helmetCapacity: 1,
+        transmission: 'Automatic (CVT)',
+        businessId: id,
+        depotId: v.depotId || resolvedDepots[0]?.id,
+        depotName: v.depotName || resolvedDepots[0]?.name || 'Main Depot',
+        registrationDocs: v.registrationDocs,
+      }));
+      setBikes((prev) => [...newBikes, ...prev]);
+    } else if (data.firstVehicle) {
       const initialBike: Motorbike = {
-        id: `bike-${Date.now()}`,
+        id: `bike-${id}-1`,
         name: data.firstVehicle.name || 'Honda Click 125i',
         brand: data.firstVehicle.brand || 'Honda',
         model: data.firstVehicle.model || 'Click 125i',
@@ -1223,6 +1367,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         helmetCapacity: 1,
         transmission: 'Automatic (CVT)',
         businessId: id,
+        depotId: data.firstVehicle.depotId || resolvedDepots[0]?.id,
+        depotName: resolvedDepots[0]?.name || 'Main Depot',
         registrationDocs: data.firstVehicle.registrationDocs,
       };
       setBikes((prev) => [initialBike, ...prev]);
@@ -1250,9 +1396,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     // Find business depot
     let matchedBiz = businesses.find((b) => b.email.toLowerCase() === normalized);
 
-    // Fallback mapping for predefined demo accounts
+    // Fallback mapping for primary depot account
     if (!matchedBiz) {
-      if (normalized === 'rideoutzambales@gmail.com' || normalized === 'jibmaxatnewroad@gmail.com') {
+      if (normalized === 'rideoutzambales@gmail.com') {
         matchedBiz = businesses.find((b) => b.id === 'biz-rideout') || businesses[0];
       }
     }
@@ -1739,6 +1885,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         extendBusinessTrial,
         registerNewBusiness,
         isPlatformAdmin,
+        isPlatformOwner,
+        businessBikes,
+        businessReservations,
+        moveBikeDepot,
+        updateBusinessDepots,
+        t,
         currency,
         setCurrency,
         language,

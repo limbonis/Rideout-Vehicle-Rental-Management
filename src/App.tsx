@@ -171,16 +171,8 @@ function AppContent() {
               <span className="text-stone-300">English</span>
             </div>
 
-            <div className="flex items-center gap-4">
-              <button
-                type="button"
-                onClick={resetDemoData}
-                className="hover:text-stone-300 transition-colors flex items-center gap-1.5"
-                title="Reset fleet, bookings and posts to original demo state"
-              >
-                <RotateCcw className="w-3 h-3" />
-                <span>Reset Demo State</span>
-              </button>
+            <div className="flex items-center gap-4 text-stone-500">
+              <span>Rideout Rentals Fleet Management System</span>
             </div>
           </div>
         </div>

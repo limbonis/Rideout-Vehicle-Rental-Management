@@ -325,26 +325,35 @@ export const SocialMediaStudio: React.FC = () => {
     showToast('Copied full TikTok caption & 5 destination hashtags!', 'success');
   };
 
+  // Multi-platform posting tickbox state
+  const [selectedPlatforms, setSelectedPlatforms] = useState<SocialPlatform[]>(['tiktok', 'facebook', 'instagram']);
+
   const handleQueueTikTokPost = () => {
     const canvas = tiktokCanvasRef.current;
     const coverUrl = canvas ? canvas.toDataURL('image/jpeg', 0.8) : tiktokImage;
 
-    addSocialPost({
-      platform: 'tiktok',
-      postType: 'story',
-      topic: 'rider_story',
-      title: `${selectedTemplate.title} (${selectedTowns.slice(0, 2).join(', ')})`,
-      caption: tiktokCaption || '',
-      textOverlay: activeLayoverText,
-      hashtags: fiveHashtags,
-      imageUrl: coverUrl,
-      musicTrack: selectedAudio.title,
-      scheduledDate: new Date().toISOString().split('T')[0],
-      status: 'scheduled',
-      likesCount: 0,
+    const targets: SocialPlatform[] = selectedPlatforms.length > 0 
+      ? (selectedPlatforms.filter(p => p === 'tiktok' || p === 'facebook' || p === 'instagram') as SocialPlatform[])
+      : ['tiktok'];
+
+    targets.forEach((p) => {
+      addSocialPost({
+        platform: p,
+        postType: p === 'tiktok' ? 'story' : 'feed_photo',
+        topic: 'rider_story',
+        title: `${selectedTemplate.title} (${selectedTowns.slice(0, 2).join(', ')})`,
+        caption: tiktokCaption || '',
+        textOverlay: activeLayoverText,
+        hashtags: fiveHashtags,
+        imageUrl: coverUrl,
+        musicTrack: selectedAudio.title,
+        scheduledDate: new Date().toISOString().split('T')[0],
+        status: 'scheduled',
+        likesCount: 0,
+      });
     });
 
-    showToast('Queued viral TikTok campaign in Content Queue!', 'success');
+    showToast(`Queued post across ${targets.map(t => t.toUpperCase()).join(', ')} in Content Queue!`, 'success');
     setActiveTab('calendar');
   };
 
@@ -731,6 +740,38 @@ export const SocialMediaStudio: React.FC = () => {
                     </a>
                   </div>
 
+                  <div className="w-full p-3 bg-stone-950 rounded-xl border border-stone-800 space-y-2">
+                    <span className="text-[11px] font-bold text-stone-200 block">
+                      Choose Where to Post (Multi-Platform Tickboxes):
+                    </span>
+                    <div className="flex flex-wrap items-center gap-4 text-xs">
+                      {[
+                        { id: 'tiktok', label: 'TikTok Video' },
+                        { id: 'facebook', label: 'Facebook Page' },
+                        { id: 'instagram', label: 'Instagram Reel/Post' },
+                      ].map((plat) => {
+                        const isChecked = selectedPlatforms.includes(plat.id as any);
+                        return (
+                          <label key={plat.id} className="flex items-center gap-1.5 cursor-pointer text-stone-300 hover:text-white">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedPlatforms(prev => [...prev, plat.id as any]);
+                                } else {
+                                  setSelectedPlatforms(prev => prev.filter(p => p !== plat.id));
+                                }
+                              }}
+                              className="rounded text-amber-400 focus:ring-0 bg-stone-900 border-stone-700"
+                            />
+                            <span className="text-[11px] font-semibold">{plat.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
@@ -747,7 +788,7 @@ export const SocialMediaStudio: React.FC = () => {
                       className="px-4 py-2 text-xs font-semibold text-stone-950 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm flex items-center gap-1.5"
                     >
                       <Calendar className="w-3.5 h-3.5" />
-                      <span>Queue for Posting</span>
+                      <span>Queue for Selected Platforms ({selectedPlatforms.length})</span>
                     </button>
                   </div>
                 </div>

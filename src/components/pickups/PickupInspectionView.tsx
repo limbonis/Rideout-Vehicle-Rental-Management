@@ -214,7 +214,9 @@ export const PickupInspectionView: React.FC = () => {
 
   // Admin Approval for Return
   const [adminApprovedReturn, setAdminApprovedReturn] = useState<boolean>(false);
-  const [adminApproverName, setAdminApproverName] = useState<string>('Mark Ramos (Owner)');
+  const [adminApproverName, setAdminApproverName] = useState<string>(
+    activeStaffUser?.name || currentBusiness.ownerName || 'Depot Manager'
+  );
 
   // Delay calculation for Return
   const [actualReturnDate, setActualReturnDate] = useState<string>(new Date().toISOString().split('T')[0]);

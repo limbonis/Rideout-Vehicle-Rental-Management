@@ -101,16 +101,25 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpenNewBookingModal })
           {/* Brand: Rideout Rentals */}
           <button 
             onClick={() => setActiveTab('landing')}
-            className="text-left group flex items-center gap-2.5 hover:opacity-90 transition-opacity shrink-0"
+            className="text-left group flex items-center gap-2.5 hover:opacity-95 transition-opacity shrink-0"
             title="Rideout Rentals - Vehicle Rental Management System"
           >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center shadow-md shadow-amber-500/20 group-hover:scale-105 transition-transform shrink-0">
-              <Bike className="w-4 h-4 text-stone-950 stroke-[2.5]" />
+            <div className="w-9 h-9 rounded-xl bg-[#1c6170]/15 border border-[#1c6170]/40 flex items-center justify-center p-1 group-hover:scale-105 transition-transform shrink-0 shadow-sm">
+              <img 
+                src="/assets/aistudio/rideout-icon-mark-transparent_40eb04ee.png" 
+                alt="Rideout Rentals Logo" 
+                className="w-full h-full object-contain" 
+              />
             </div>
             <div>
-              <span className="text-sm font-extrabold tracking-tight text-stone-100 group-hover:text-amber-400 transition-colors whitespace-nowrap block">
-                Rideout Rentals
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-black tracking-tight text-stone-100 group-hover:text-amber-400 transition-colors whitespace-nowrap block">
+                  RIDEOUT
+                </span>
+                <span className="text-[10px] font-bold text-amber-400 tracking-wider whitespace-nowrap uppercase">
+                  RENTALS
+                </span>
+              </div>
               <span className="text-[10px] text-stone-400 block -mt-0.5 whitespace-nowrap">
                 Vehicle Rental System
               </span>

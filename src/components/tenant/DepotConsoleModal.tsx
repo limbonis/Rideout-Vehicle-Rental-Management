@@ -17,7 +17,9 @@ import {
   Plus, 
   CheckCircle2, 
   LogOut,
-  Maximize2
+  Maximize2,
+  Sliders,
+  Settings
 } from 'lucide-react';
 import { OverviewStats } from '../analytics/OverviewStats';
 import { ReservationsView } from '../reservations/ReservationsView';
@@ -43,13 +45,12 @@ type ConsoleTab =
   | 'overview' 
   | 'reservations' 
   | 'pickups' 
-  | 'fleet' 
-  | 'reports' 
-  | 'inbox' 
   | 'social' 
-  | 'promos' 
-  | 'branding' 
+  | 'inbox' 
+  | 'management' 
   | 'network';
+
+type ManagementSubTab = 'fleet' | 'reports' | 'promos' | 'branding';
 
 export const DepotConsoleModal: React.FC<DepotConsoleModalProps> = ({
   isOpen,
@@ -59,15 +60,18 @@ export const DepotConsoleModal: React.FC<DepotConsoleModalProps> = ({
   const { 
     currentBusiness, 
     reservations, 
+    businessReservations,
     unreadChatCount, 
     currentUser, 
     logoutUser,
     setSelectedReservationForPickup,
     isArchiveModalOpen,
-    setIsArchiveModalOpen
+    setIsArchiveModalOpen,
+    isPlatformOwner
   } = useApp();
 
   const [activeConsoleTab, setActiveConsoleTab] = useState<ConsoleTab>('overview');
+  const [activeManagementSubTab, setActiveManagementSubTab] = useState<ManagementSubTab>('fleet');
   const [isSwitchDepotOpen, setIsSwitchDepotOpen] = useState(false);
 
   useEffect(() => {
@@ -88,7 +92,8 @@ export const DepotConsoleModal: React.FC<DepotConsoleModalProps> = ({
 
   if (!isOpen) return null;
 
-  const pendingCount = reservations.filter(r => r.status === 'pending' || r.status === 'confirmed').length;
+  const currentReservations = businessReservations || reservations.filter(r => r.businessId === currentBusiness.id);
+  const pendingCount = currentReservations.filter(r => r.status === 'pending' || r.status === 'confirmed').length;
 
   const handleSelectReservationForPickup = (res: Reservation) => {
     setSelectedReservationForPickup(res);
@@ -120,7 +125,9 @@ export const DepotConsoleModal: React.FC<DepotConsoleModalProps> = ({
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 </div>
                 <span className="text-[10px] text-amber-400 font-mono block -mt-0.5">
-                  Active Depot Console
+                  {currentBusiness.depots && currentBusiness.depots.length > 1 
+                    ? `${currentBusiness.depots.length} Active Depots` 
+                    : 'Active Depot Console'}
                 </span>
               </div>
               <button
@@ -136,6 +143,11 @@ export const DepotConsoleModal: React.FC<DepotConsoleModalProps> = ({
               <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-950/60 border border-stone-800 text-[11px] font-mono text-stone-300">
                 <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                 <span>{currentUser.email}</span>
+                {isPlatformOwner && (
+                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-300 font-bold uppercase ml-1">
+                    Platform Owner
+                  </span>
+                )}
               </span>
             )}
           </div>
@@ -170,7 +182,7 @@ export const DepotConsoleModal: React.FC<DepotConsoleModalProps> = ({
           </div>
         </div>
 
-        {/* Console Navigation Tabs Bar */}
+        {/* Consolidated Console Navigation Tabs Bar */}
         <div className="shrink-0 bg-stone-950 border-b border-stone-800/80 px-4 sm:px-6 py-2 overflow-x-auto scrollbar-none">
           <nav className="flex items-center gap-1.5 text-xs font-medium">
             <button
@@ -210,27 +222,15 @@ export const DepotConsoleModal: React.FC<DepotConsoleModalProps> = ({
             </button>
 
             <button
-              onClick={() => setActiveConsoleTab('fleet')}
+              onClick={() => setActiveConsoleTab('social')}
               className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeConsoleTab === 'fleet'
+                activeConsoleTab === 'social'
                   ? 'bg-amber-400 text-stone-950 font-bold shadow-sm'
                   : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
               }`}
             >
-              <Bike className="w-3.5 h-3.5" />
-              <span>Fleet Inventory</span>
-            </button>
-
-            <button
-              onClick={() => setActiveConsoleTab('reports')}
-              className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeConsoleTab === 'reports'
-                  ? 'bg-amber-400 text-stone-950 font-bold shadow-sm'
-                  : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
-              }`}
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5" />
-              <span>Audit Reports</span>
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Social Studio</span>
             </button>
 
             <button
@@ -248,55 +248,93 @@ export const DepotConsoleModal: React.FC<DepotConsoleModalProps> = ({
               )}
             </button>
 
+            {/* Consolidated Depot Management Suite */}
             <button
-              onClick={() => setActiveConsoleTab('social')}
+              onClick={() => setActiveConsoleTab('management')}
               className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeConsoleTab === 'social'
+                activeConsoleTab === 'management'
                   ? 'bg-amber-400 text-stone-950 font-bold shadow-sm'
                   : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
               }`}
             >
-              <Share2 className="w-3.5 h-3.5" />
-              <span>TikTok Studio</span>
+              <Sliders className="w-3.5 h-3.5" />
+              <span>Depot Management</span>
+            </button>
+
+            {/* Partner Depot Network: ONLY visible to platform owner */}
+            {isPlatformOwner && (
+              <button
+                onClick={() => setActiveConsoleTab('network')}
+                className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  activeConsoleTab === 'network'
+                    ? 'bg-amber-400 text-stone-950 font-bold shadow-sm'
+                    : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+                }`}
+                title="Only accessible to Platform Owner"
+              >
+                <Building2 className="w-3.5 h-3.5 text-amber-400" />
+                <span>Partner Network (Owner)</span>
+              </button>
+            )}
+          </nav>
+        </div>
+
+        {/* Sub-navigation bar when inside Depot Management Suite */}
+        {activeConsoleTab === 'management' && (
+          <div className="shrink-0 bg-stone-900/90 border-b border-stone-800 px-4 sm:px-6 py-1.5 flex items-center gap-2 overflow-x-auto">
+            <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider mr-2 hidden sm:inline">
+              Management Suite:
+            </span>
+
+            <button
+              onClick={() => setActiveManagementSubTab('fleet')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                activeManagementSubTab === 'fleet'
+                  ? 'bg-stone-100 text-stone-950 shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
+              }`}
+            >
+              <Bike className="w-3.5 h-3.5" />
+              <span>Fleet Inventory</span>
             </button>
 
             <button
-              onClick={() => setActiveConsoleTab('promos')}
-              className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeConsoleTab === 'promos'
-                  ? 'bg-amber-400 text-stone-950 font-bold shadow-sm'
-                  : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+              onClick={() => setActiveManagementSubTab('reports')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                activeManagementSubTab === 'reports'
+                  ? 'bg-stone-100 text-stone-950 shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
+              }`}
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>Audit Reports</span>
+            </button>
+
+            <button
+              onClick={() => setActiveManagementSubTab('promos')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                activeManagementSubTab === 'promos'
+                  ? 'bg-stone-100 text-stone-950 shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
               }`}
             >
               <Tag className="w-3.5 h-3.5" />
-              <span>Promos</span>
+              <span>Promos & Rates</span>
             </button>
 
             <button
-              onClick={() => setActiveConsoleTab('branding')}
-              className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeConsoleTab === 'branding'
-                  ? 'bg-amber-400 text-stone-950 font-bold shadow-sm'
-                  : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+              onClick={() => setActiveManagementSubTab('branding')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                activeManagementSubTab === 'branding'
+                  ? 'bg-stone-100 text-stone-950 shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
               }`}
             >
               <Palette className="w-3.5 h-3.5" />
-              <span>Branding</span>
+              <span>Branding & Depots</span>
             </button>
-
-            <button
-              onClick={() => setActiveConsoleTab('network')}
-              className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeConsoleTab === 'network'
-                  ? 'bg-amber-400 text-stone-950 font-bold shadow-sm'
-                  : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
-              }`}
-            >
-              <Building2 className="w-3.5 h-3.5" />
-              <span>Partner Depot Network</span>
-            </button>
-          </nav>
-        </div>
+          </div>
+        )}
 
         {/* Modal Main Content Area */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-stone-950">
@@ -318,33 +356,34 @@ export const DepotConsoleModal: React.FC<DepotConsoleModalProps> = ({
             <PickupInspectionView />
           )}
 
-          {activeConsoleTab === 'fleet' && (
-            <FleetView
-              onOpenNewBookingWithBike={(bikeId) => onOpenNewBooking(bikeId)}
-            />
-          )}
-
-          {activeConsoleTab === 'reports' && (
-            <DepotSummaryReportView />
+          {activeConsoleTab === 'social' && (
+            <SocialMediaStudio />
           )}
 
           {activeConsoleTab === 'inbox' && (
             <UnifiedInboxView />
           )}
 
-          {activeConsoleTab === 'social' && (
-            <SocialMediaStudio />
+          {activeConsoleTab === 'management' && (
+            <>
+              {activeManagementSubTab === 'fleet' && (
+                <FleetView
+                  onOpenNewBookingWithBike={(bikeId) => onOpenNewBooking(bikeId)}
+                />
+              )}
+              {activeManagementSubTab === 'reports' && (
+                <DepotSummaryReportView />
+              )}
+              {activeManagementSubTab === 'promos' && (
+                <PromoManagementView />
+              )}
+              {activeManagementSubTab === 'branding' && (
+                <ShopBrandingView />
+              )}
+            </>
           )}
 
-          {activeConsoleTab === 'promos' && (
-            <PromoManagementView />
-          )}
-
-          {activeConsoleTab === 'branding' && (
-            <ShopBrandingView />
-          )}
-
-          {activeConsoleTab === 'network' && (
+          {activeConsoleTab === 'network' && isPlatformOwner && (
             <BusinessActivationView />
           )}
         </div>

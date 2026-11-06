@@ -27,6 +27,8 @@ export interface Motorbike {
   transmission: 'Automatic (CVT)' | 'Manual (Clutch)' | 'Semi-Automatic';
   businessId?: string;
   registrationDocs?: MotorbikeRegistrationDocs;
+  depotId?: string;
+  depotName?: string;
 }
 
 export type ReservationStatus = 
@@ -103,6 +105,11 @@ export interface Reservation {
   cashHandoverPhotoUrl?: string;
   pickupLocationId?: string;
   pickupLocationCoordinates?: { lat: number; lng: number };
+  pickupDepotId?: string;
+  pickupDepotName?: string;
+  returnDepotId?: string;
+  returnDepotName?: string;
+  interDepotFee?: number;
   currency?: SupportedCurrency;
   language?: SupportedLanguage;
   socialPlatformChoice?: 'facebook' | 'instagram' | 'tiktok';
@@ -419,6 +426,20 @@ export interface StaffPermissions {
   canAccessSocialInbox?: boolean;  // Omnichannel Messenger, WhatsApp, IG, TikTok
 }
 
+export interface DepotLocation {
+  id: string;
+  name: string;
+  address: string;
+  town: string;
+  province: string;
+  coordinates: { lat: number; lng: number };
+  googleMapsPinUrl: string;
+  storefrontPhotoUrl?: string;
+  contactPhone?: string;
+  isPrimary?: boolean;
+  timingsSchedule?: string;
+}
+
 export interface StaffUser {
   id: string;
   businessId: string;
@@ -428,6 +449,8 @@ export interface StaffUser {
   role: 'manager' | 'staff';
   title: string; // e.g. "Depot Shift Supervisor", "Front Counter Receptionist"
   avatarUrl?: string;
+  idCardPhotoUrl?: string;
+  idNumber?: string;
   isActive: boolean;
   permissions: StaffPermissions;
   createdAt: string;
@@ -462,7 +485,11 @@ export interface RentalBusiness {
   ownerIdPhotoUrl?: string; // Uploaded Government ID of owner
   ownerIdType?: string;
   ownerIdNumber?: string;
+  ownerIdExpiration?: string;
   emailVerified?: boolean;
+  depots?: DepotLocation[];
+  allowDifferentReturnDepot?: boolean;
+  interDepotTransferFee?: number;
   vehicleInventoryCounts?: {
     hasBicycles: boolean;
     bicyclesQty: number;
@@ -486,6 +513,8 @@ export interface RentalBusiness {
     hasInternetConnection: boolean;
     nativeMessagingActive: boolean;
     appInstalledOnServerPhone: boolean;
+    permissionsAuthorized?: boolean;
+    permissionsDate?: string;
   };
   googleIntegration?: GoogleAccountIntegration;
 }

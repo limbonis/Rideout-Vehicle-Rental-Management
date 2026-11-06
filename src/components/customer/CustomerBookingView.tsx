@@ -821,27 +821,6 @@ export const CustomerBookingView: React.FC = () => {
                 />
               </div>
             </div>
-
-            {/* Quick Demo Renter Chips */}
-            <div className="flex items-center gap-2 flex-wrap pt-1 text-xs">
-              <span className="text-[11px] text-stone-500">Quick view demo renters:</span>
-              {reservations.slice(0, 3).map((res) => (
-                <button
-                  key={res.id}
-                  onClick={() => {
-                    setLookupSelectedResId(res.id);
-                    setLookupQuery(res.bookingRef || res.customerName);
-                  }}
-                  className={`px-2.5 py-1 rounded text-xs font-mono transition-colors border ${
-                    activeLookupRes?.id === res.id
-                      ? 'bg-amber-400/20 border-amber-400 text-amber-300 font-bold'
-                      : 'bg-stone-950 border-stone-800 text-stone-300 hover:border-stone-700'
-                  }`}
-                >
-                  {res.customerName} ({res.bookingRef})
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Active Lookup Reservation Display */}
@@ -1146,7 +1125,7 @@ export const CustomerBookingView: React.FC = () => {
             </div>
           ) : (
             <div className="p-8 text-center text-xs text-stone-400 bg-stone-900/40 rounded-xl border border-stone-800">
-              No reservation found matching "{lookupQuery}". Try searching for Juan Dela Cruz or click one of the demo chips above.
+              No reservation found matching "{lookupQuery}". Please double check your booking reference code or mobile number.
             </div>
           )}
         </div>

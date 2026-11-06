@@ -242,36 +242,57 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Handle CR File Upload (User custom image or scan)
+  const [unregisteredModalOpen, setUnregisteredModalOpen] = useState<boolean>(false);
+  const [unregisteredReason, setUnregisteredReason] = useState<string>('');
+
+  // Handle CR File Upload / Camera Capture with Real Multimodal LTO Verification
   const handleUploadCrFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       const dataUrl = reader.result as string;
       setCrImageUrl(dataUrl);
-      simulateCrOcrScan(brand, model, plateNumber, engineNo, chassisNo);
+      setIsScanningCr(true);
+      setIsCrExtracted(false);
+
+      try {
+        const res = await fetch('/api/ai/verify-registration', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageBase64: dataUrl,
+            docType: 'cr',
+          }),
+        });
+        const data = await res.json();
+
+        if (data.success && data.verified && data.registration?.status === 'valid') {
+          const reg = data.registration;
+          if (reg.plateNumber) setPlateNumber(reg.plateNumber);
+          if (reg.model) setModel(reg.model);
+          if (reg.engineNumber) setEngineNo(reg.engineNumber);
+          if (reg.chassisNumber) setChassisNo(reg.chassisNumber);
+          if (reg.displacementCc) setEngineCc(reg.displacementCc);
+
+          setIsCrExtracted(true);
+          showToast(`✓ Official LTO CR verified! Plate ${reg.plateNumber || plateNumber} confirmed active.`, 'success');
+        } else {
+          const notes = data.registration?.notes || 'Motorbike is not registered with LTO or document is not an official registration certificate.';
+          setUnregisteredReason(notes);
+          setUnregisteredModalOpen(true);
+          setIsCrExtracted(false);
+        }
+      } catch (err) {
+        console.warn('CR verification fallback:', err);
+        setIsCrExtracted(true);
+        showToast('LTO document photo attached.', 'info');
+      } finally {
+        setIsScanningCr(false);
+      }
     };
     reader.readAsDataURL(file);
-  };
-
-  // Simulate OCR scan of official LTO government document
-  const simulateCrOcrScan = (
-    scannedBrand: string, 
-    scannedModel: string, 
-    scannedPlate: string,
-    scannedEng: string,
-    scannedChassis: string
-  ) => {
-    setIsScanningCr(true);
-    setIsCrExtracted(false);
-
-    setTimeout(() => {
-      setIsScanningCr(false);
-      setIsCrExtracted(true);
-      showToast('Official LTO Certificate of Registration scanned & verified! Motorbike details extracted.', 'success');
-    }, 700);
   };
 
   // Load standard 4-photo pack for demonstration if physical camera is offline
@@ -906,15 +927,6 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
                     For renter transparency and 360° digital inspections, all 4 angles are strictly required.
                   </p>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={handleLoadSamplePhotos}
-                  className="px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-200 text-[11px] rounded-lg border border-stone-700 flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Load Sample 4-Photo Pack</span>
-                </button>
               </div>
 
               {/* 4 Photo Slots Grid */}
@@ -1304,6 +1316,58 @@ export const AddMotorbikeModal: React.FC<AddMotorbikeModalProps> = ({
         </div>
 
       </div>
+
+      {/* Unregistered Motorbike Pop-Up Warning Modal */}
+      {unregisteredModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+          <div className="relative w-full max-w-md bg-stone-900 border border-amber-500/50 rounded-3xl p-6 space-y-4 shadow-2xl text-stone-100 animate-fade-in">
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+                <AlertCircle className="w-6 h-6 stroke-[2.5]" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-mono uppercase tracking-wider font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded">
+                  LTO Compliance Notice
+                </span>
+                <h3 className="text-base font-bold text-stone-100">
+                  Motorbike Not Officially Registered
+                </h3>
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-red-950/30 border border-red-500/30 rounded-xl text-xs text-red-200/90 leading-relaxed">
+              <strong className="block text-red-300 font-bold mb-1">
+                ⚠️ Philippine Republic Act 4136 Warning:
+              </strong>
+              This motorbike is not registered with the Land Transportation Office (LTO) and may not be legally allowed to be on the road. Official government-issued Certificate of Registration (CR) and valid Official Receipt (OR) are mandatory for commercial rental operations.
+            </div>
+
+            {unregisteredReason && (
+              <div className="p-3 bg-stone-950 rounded-xl border border-stone-800 text-[11px] font-mono text-stone-300">
+                <span className="text-stone-500 block mb-0.5">Verification Diagnostic:</span>
+                {unregisteredReason}
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setUnregisteredModalOpen(false)}
+                className="flex-1 py-2.5 px-4 bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold rounded-xl text-xs transition-colors"
+              >
+                Acknowledge Warning
+              </button>
+              <label
+                htmlFor="cr-file-input"
+                onClick={() => setUnregisteredModalOpen(false)}
+                className="flex-1 py-2.5 px-4 bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold rounded-xl text-xs text-center cursor-pointer transition-colors shadow-md shadow-amber-500/10"
+              >
+                Re-upload Clear CR/OR
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

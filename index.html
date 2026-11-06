@@ -11,41 +11,79 @@
     <meta name="twitter:card" content="summary_large_image" />
     
     <!-- PWA & Mobile Web App Meta Tags -->
-    <meta name="theme-color" content="#0c0a09" />
+    <meta name="theme-color" content="#1c6170" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Rideout Rentals" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="/assets/aistudio/rideout-icon-mark-transparent_40eb04ee.png" />
+    <link rel="apple-touch-icon" href="/assets/aistudio/app-icon-ios-1024-teal_a4d1209f.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
-    <!-- Suppress benign preview environment WebSocket / HMR disconnection errors -->
+    <!-- Intercept and suppress preview environment Vite HMR WebSocket connection errors -->
     <script>
-      window.addEventListener('error', function(event) {
-        if (event && event.message && (
-          event.message.includes('WebSocket') || 
-          event.message.includes('WebSocket closed') ||
-          event.message.includes('@vite/client')
-        )) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          return true;
+      (function() {
+        var NativeWebSocket = window.WebSocket;
+        if (NativeWebSocket) {
+          function MockViteWebSocket(url, protocols) {
+            var isViteHmr = 
+              protocols === 'vite-hmr' || 
+              (Array.isArray(protocols) && protocols.indexOf('vite-hmr') !== -1) ||
+              (typeof url === 'string' && (url.indexOf('token=') !== -1 || url.indexOf('/@vite/') !== -1 || url.indexOf('vite-hmr') !== -1));
+
+            if (isViteHmr) {
+              var target = new EventTarget();
+              target.url = String(url);
+              target.protocol = 'vite-hmr';
+              target.readyState = 1; // WebSocket.OPEN
+              target.bufferedAmount = 0;
+              target.binaryType = 'blob';
+              target.send = function() {};
+              target.close = function(code, reason) {
+                target.readyState = 3;
+                target.dispatchEvent(new Event('close'));
+              };
+              queueMicrotask(function() {
+                target.dispatchEvent(new Event('open'));
+              });
+              return target;
+            }
+            return new NativeWebSocket(url, protocols);
+          }
+          MockViteWebSocket.prototype = NativeWebSocket.prototype;
+          MockViteWebSocket.CONNECTING = 0;
+          MockViteWebSocket.OPEN = 1;
+          MockViteWebSocket.CLOSING = 2;
+          MockViteWebSocket.CLOSED = 3;
+          window.WebSocket = MockViteWebSocket;
         }
-      }, true);
-      window.addEventListener('unhandledrejection', function(event) {
-        if (event && event.reason && String(event.reason).includes('WebSocket')) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-        }
-      }, true);
+
+        window.addEventListener('error', function(event) {
+          var msg = event ? (event.message || (event.error && event.error.message) || '') : '';
+          var stack = event && event.error && event.error.stack ? event.error.stack : '';
+          if (msg.indexOf('WebSocket') !== -1 || msg.indexOf('@vite/client') !== -1 || stack.indexOf('@vite/client') !== -1) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(event) {
+          var reasonStr = event ? String(event.reason || (event.reason && event.reason.message) || '') : '';
+          var stack = event && event.reason && event.reason.stack ? event.reason.stack : '';
+          if (reasonStr.indexOf('WebSocket') !== -1 || reasonStr.indexOf('@vite/client') !== -1 || stack.indexOf('@vite/client') !== -1) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+          }
+        }, true);
+      })();
     </script>
   </head>
-  <body class="bg-stone-950 text-stone-100 antialiased selection:bg-amber-500 selection:text-stone-950 font-['Plus_Jakarta_Sans',sans-serif]">
+  <body class="bg-stone-950 text-stone-100 antialiased selection:bg-[#1c6170] selection:text-white font-['Plus_Jakarta_Sans',sans-serif]">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

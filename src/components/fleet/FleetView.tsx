@@ -21,15 +21,26 @@ interface FleetViewProps {
 }
 
 export const FleetView: React.FC<FleetViewProps> = ({ onOpenNewBookingWithBike }) => {
-  const { bikes, updateBikeStatus, updateBikePhoto, showToast } = useApp();
+  const { 
+    bikes, 
+    businessBikes, 
+    currentBusiness, 
+    updateBikeStatus, 
+    updateBikePhoto, 
+    moveBikeDepot, 
+    showToast 
+  } = useApp();
 
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [studioBike, setStudioBike] = useState<Motorbike | null>(null);
+  const [movingBikeId, setMovingBikeId] = useState<string | null>(null);
 
-  const filteredBikes = bikes.filter((b) => {
+  const activeBikes = businessBikes || bikes.filter(b => b.businessId === currentBusiness.id);
+
+  const filteredBikes = activeBikes.filter((b) => {
     const matchesCategory = categoryFilter === 'all' || b.category === categoryFilter;
     const matchesStatus = statusFilter === 'all' || b.status === statusFilter;
     const matchesSearch = 
@@ -174,9 +185,37 @@ export const FleetView: React.FC<FleetViewProps> = ({ onOpenNewBookingWithBike }
               <div className="p-5 space-y-4 flex-1 flex flex-col justify-between">
                 <div>
                   <h3 className="text-base font-bold text-stone-100">{bike.name}</h3>
-                  <div className="text-xs text-stone-400 mt-0.5">
-                    {bike.transmission} · {bike.category.replace('-', ' ')}
+                  <div className="text-xs text-stone-400 mt-0.5 flex items-center justify-between gap-2">
+                    <span>{bike.transmission} · {bike.category.replace('-', ' ')}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-stone-950 text-amber-400 border border-stone-800">
+                      📍 {bike.depotName || currentBusiness.depots?.[0]?.name || currentBusiness.location.split(',')[0]}
+                    </span>
                   </div>
+
+                  {/* Inter-Depot Relocation Control for Multi-Depot Businesses */}
+                  {currentBusiness.depots && currentBusiness.depots.length > 1 && (
+                    <div className="mt-2.5 p-2 rounded-lg bg-stone-950 border border-stone-800/80 flex items-center justify-between gap-2 text-xs">
+                      <span className="text-[10px] text-stone-400 font-medium">Stationed Depot:</span>
+                      <select
+                        aria-label="Move Bike Depot"
+                        value={bike.depotId || currentBusiness.depots[0].id}
+                        onChange={(e) => {
+                          const targetDepot = currentBusiness.depots?.find(d => d.id === e.target.value);
+                          if (targetDepot) {
+                            moveBikeDepot(bike.id, targetDepot.id);
+                            showToast(`Moved ${bike.name} to ${targetDepot.name}`, 'success');
+                          }
+                        }}
+                        className="text-[11px] bg-stone-900 border border-stone-700 text-stone-200 rounded px-2 py-1 font-medium focus:border-amber-400"
+                      >
+                        {currentBusiness.depots.map(depot => (
+                          <option key={depot.id} value={depot.id}>
+                            {depot.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   {/* Highlights */}
                   <div className="mt-3 flex flex-wrap gap-1.5">

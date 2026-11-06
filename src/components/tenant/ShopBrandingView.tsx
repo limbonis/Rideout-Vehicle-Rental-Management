@@ -95,7 +95,7 @@ export const ShopBrandingView: React.FC = () => {
   const [location, setLocation] = useState(currentBusiness.location);
   const [logoUrl, setLogoUrl] = useState(currentBusiness.logoUrl);
   const [coverPhotoUrl, setCoverPhotoUrl] = useState(currentBusiness.coverPhotoUrl);
-  const [primaryColor, setPrimaryColor] = useState(currentBusiness.primaryColor || '#f59e0b');
+  const [primaryColor, setPrimaryColor] = useState(currentBusiness.primaryColor || '#1c6170');
 
   // Facebook Import & Direct Connect State
   const [fbPageUrl, setFbPageUrl] = useState(currentBusiness.facebookBranding?.pageUrl || 'https://facebook.com/rideoutzambales');
@@ -642,37 +642,6 @@ export const ShopBrandingView: React.FC = () => {
                 </button>
               </div>
             </div>
-
-            {/* Quick Demo Presets */}
-            <div className="pt-2 border-t border-blue-500/20 space-y-1.5">
-              <span className="text-[10px] text-stone-400 uppercase font-semibold">Quick test with sample Philippine rental depots:</span>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { label: 'Liwliwa Surf & Moto', url: 'https://facebook.com/liwliwasurfrentals' },
-                  { label: 'Elyu Wheels & Waves', url: 'https://facebook.com/elyuwheels' },
-                  { label: 'Siargao Island Motos', url: 'https://facebook.com/siargaomotos' },
-                  { label: 'RideOut Zambales', url: 'https://facebook.com/rideoutzambales' },
-                ].map((preset, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setFbPageUrl(preset.url);
-                      importBrandingFromFacebook(currentBusiness.id, preset.url).then((res) => {
-                        if (res) {
-                          setName(res.name);
-                          setLogoUrl(res.logoUrl);
-                          setCoverPhotoUrl(res.coverPhotoUrl);
-                        }
-                      });
-                    }}
-                    className="text-[11px] px-2 py-1 rounded bg-stone-900 border border-stone-800 hover:border-blue-400 text-stone-300 hover:text-white transition-colors"
-                  >
-                    {preset.label}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Section 2: Logo & Cover Photo Upload */}
@@ -743,6 +712,91 @@ export const ShopBrandingView: React.FC = () => {
                     className="hidden"
                   />
                 </label>
+              </div>
+            </div>
+
+            {/* Official Rideout Logo Presets */}
+            <div className="pt-3 border-t border-stone-800/80 space-y-2">
+              <span className="text-[11px] font-semibold text-stone-300 block">
+                Official Rideout Logo & Mark Presets:
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {[
+                  {
+                    name: 'Road Mark (Transparent)',
+                    url: '/assets/aistudio/rideout-icon-mark-transparent_40eb04ee.png',
+                    bg: 'bg-stone-950'
+                  },
+                  {
+                    name: 'Full Horizontal Logo',
+                    url: '/assets/aistudio/rideout-logo-horizontal-white-bg_88410670.png',
+                    bg: 'bg-white'
+                  },
+                  {
+                    name: 'Teal App Icon (iOS)',
+                    url: '/assets/aistudio/app-icon-ios-1024-teal_a4d1209f.png',
+                    bg: 'bg-[#1c6170]'
+                  },
+                  {
+                    name: 'White App Icon (Play)',
+                    url: '/assets/aistudio/app-icon-playstore-512-white__1__30d48bb6.png',
+                    bg: 'bg-white'
+                  }
+                ].map((item) => (
+                  <button
+                    key={item.url}
+                    type="button"
+                    onClick={() => {
+                      setLogoUrl(item.url);
+                      showToast(`Applied ${item.name}`, 'info');
+                    }}
+                    className={`p-2 rounded-xl border text-left flex items-center gap-2 transition-all ${
+                      logoUrl === item.url
+                        ? 'border-amber-400 bg-amber-400/10'
+                        : 'border-stone-800 hover:border-stone-700 bg-stone-950/60'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg ${item.bg} p-1 flex items-center justify-center shrink-0 border border-stone-700/50`}>
+                      <img src={item.url} alt={item.name} className="w-full h-full object-contain" />
+                    </div>
+                    <span className="text-[10px] font-medium text-stone-300 leading-tight">
+                      {item.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Official Rideout Palette Selection */}
+            <div className="pt-3 border-t border-stone-800/80 space-y-2">
+              <span className="text-[11px] font-semibold text-stone-300 block">
+                Official Brand Accent & Highlight Color:
+              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                {[
+                  { name: 'Rideout Teal', hex: '#1c6170' },
+                  { name: 'Road Terracotta', hex: '#d87a38' },
+                  { name: 'Deep Petrol', hex: '#0a161b' },
+                  { name: 'Marine Forest', hex: '#123e47' },
+                  { name: 'Ocean Cyan', hex: '#25788a' }
+                ].map((col) => (
+                  <button
+                    key={col.hex}
+                    type="button"
+                    onClick={() => {
+                      setPrimaryColor(col.hex);
+                      showToast(`Brand color set to ${col.name} (${col.hex})`, 'info');
+                    }}
+                    className={`px-2.5 py-1.5 rounded-lg border text-xs flex items-center gap-2 transition-all ${
+                      primaryColor === col.hex
+                        ? 'border-white bg-stone-800 ring-2 ring-white/20'
+                        : 'border-stone-800 bg-stone-950 hover:border-stone-700'
+                    }`}
+                  >
+                    <span className="w-3.5 h-3.5 rounded-full border border-white/20" style={{ backgroundColor: col.hex }} />
+                    <span className="text-stone-300 font-mono text-[11px]">{col.name}</span>
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -2314,10 +2368,48 @@ export const ShopBrandingView: React.FC = () => {
                 <input
                   type="text"
                   value={operatingTown}
-                  onChange={(e) => setOperatingTown(e.target.value)}
-                  placeholder="e.g. San Felipe, Zambales or General Luna, Siargao"
+                  onChange={(e) => {
+                    const newTown = e.target.value;
+                    setOperatingTown(newTown);
+                    const detected = getNearbyTownsForLocation(newTown);
+                    setTargetedTowns(detected.slice(0, 5).map(t => t.name));
+                  }}
+                  placeholder="e.g. Porac, Pampanga or San Felipe, Zambales"
                   className="flex-1 px-3 py-2 bg-stone-900 border border-stone-800 rounded-lg text-stone-100 text-xs focus:outline-none focus:border-amber-400 font-medium"
                 />
+
+                {/* Pin on Google Maps / Locate Me button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (navigator.geolocation) {
+                      navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                          const lat = pos.coords.latitude.toFixed(4);
+                          const lng = pos.coords.longitude.toFixed(4);
+                          showToast(`Pinned GPS coordinates: ${lat}, ${lng}`, 'success');
+                          // If close to Pampanga/Porac or Zambales
+                          const detected = getNearbyTownsForLocation(operatingTown);
+                          setTargetedTowns(detected.slice(0, 5).map(t => t.name));
+                        },
+                        () => {
+                          // Fallback to Zambales pin
+                          showToast('Using Google Maps Pin: 15.0683, 120.0601', 'info');
+                          const detected = getNearbyTownsForLocation(operatingTown);
+                          setTargetedTowns(detected.slice(0, 5).map(t => t.name));
+                        }
+                      );
+                    } else {
+                      showToast('Google Maps Pin applied: 15.0683, 120.0601', 'info');
+                    }
+                  }}
+                  className="px-3 py-2 bg-stone-900 hover:bg-stone-850 text-amber-400 border border-amber-400/30 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5"
+                  title="Obtain location from Google Maps pin or device GPS"
+                >
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>Pin on Maps</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => {
@@ -2335,6 +2427,7 @@ export const ShopBrandingView: React.FC = () => {
               <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[11px]">
                 <span className="text-stone-500 text-[10px]">Popular Hub Presets:</span>
                 {[
+                  { label: 'Porac, Pampanga', loc: 'Porac, Pampanga' },
                   { label: 'Zambales Coast', loc: 'San Felipe, Zambales' },
                   { label: 'La Union Surf', loc: 'San Juan, La Union' },
                   { label: 'Siargao Island', loc: 'General Luna, Siargao' },
@@ -2479,7 +2572,7 @@ export const ShopBrandingView: React.FC = () => {
               <span className="font-semibold text-stone-300 text-xs block">
                 Add Custom Nominated Spot / Attraction to Marketing Scope:
               </span>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="text"
                   value={customTownInput}
@@ -2487,6 +2580,25 @@ export const ShopBrandingView: React.FC = () => {
                   placeholder="e.g. Kwentong Dagat Seawall, San Felipe Pine Woods"
                   className="flex-1 px-3 py-1.5 bg-stone-900 border border-stone-800 rounded-lg text-stone-100 text-xs focus:outline-none focus:border-amber-400"
                 />
+                
+                <button
+                  type="button"
+                  onClick={() => {
+                    const spotName = customTownInput.trim() || 'Custom Scenic Spot';
+                    const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(spotName)}`;
+                    if (!targetedTowns.includes(spotName)) {
+                      setTargetedTowns(prev => [...prev, spotName]);
+                      showToast(`Pinned & added "${spotName}" from Google Maps`, 'success');
+                    }
+                    setCustomTownInput('');
+                  }}
+                  className="px-3 py-1.5 bg-stone-900 hover:bg-stone-850 text-amber-400 border border-amber-400/30 font-semibold rounded-lg text-xs flex items-center justify-center gap-1.5 whitespace-nowrap"
+                  title="Pin spot and obtain location from Google Maps"
+                >
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>Pin on Maps</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => {
@@ -2497,7 +2609,7 @@ export const ShopBrandingView: React.FC = () => {
                     }
                     setCustomTownInput('');
                   }}
-                  className="px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold rounded-lg text-xs"
+                  className="px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold rounded-lg text-xs whitespace-nowrap"
                 >
                   Add Spot
                 </button>

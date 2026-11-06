@@ -7,23 +7,23 @@
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0c0a09",
-  "theme_color": "#0c0a09",
+  "background_color": "#0a161b",
+  "theme_color": "#1c6170",
   "icons": [
     {
-      "src": "/pwa-192x192.png",
+      "src": "/assets/aistudio/rideout-icon-mark-transparent_40eb04ee.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/pwa-512x512.png",
-      "sizes": "512x512",
+      "src": "/assets/aistudio/app-icon-ios-1024-teal_a4d1209f.png",
+      "sizes": "512x512 1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/pwa-maskable-512x512.png",
+      "src": "/assets/aistudio/app-icon-playstore-512-white__1__30d48bb6.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

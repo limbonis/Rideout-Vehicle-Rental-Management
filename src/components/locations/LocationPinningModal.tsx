@@ -25,8 +25,8 @@ export const LocationPinningModal: React.FC<LocationPinningModalProps> = ({
   const [photos, setPhotos] = useState<string[]>(location?.photos || [
     'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&auto=format&fit=crop&q=80',
   ]);
-  const [staffName, setStaffName] = useState(location?.contactStaff?.name || 'Mark Ramos');
-  const [staffMobile, setStaffMobile] = useState(location?.contactStaff?.mobile || '0917 832 9900');
+  const [staffName, setStaffName] = useState(location?.contactStaff?.name || '');
+  const [staffMobile, setStaffMobile] = useState(location?.contactStaff?.mobile || '');
   const [staffRole, setStaffRole] = useState(location?.contactStaff?.role || 'Depot Supervisor');
   const [timingsSchedule, setTimingsSchedule] = useState(
     location?.timingsSchedule || 'Open Daily 7:00 AM – 7:00 PM. Sunset dispatch cut-off at 6:30 PM.'
@@ -244,7 +244,7 @@ export const LocationPinningModal: React.FC<LocationPinningModalProps> = ({
                   type="text"
                   value={staffName}
                   onChange={(e) => setStaffName(e.target.value)}
-                  placeholder="e.g. Mark Ramos"
+                  placeholder="e.g. Juan dela Cruz"
                   className="w-full px-2 py-1 bg-stone-900 border border-stone-800 rounded text-stone-200 text-xs"
                 />
               </div>

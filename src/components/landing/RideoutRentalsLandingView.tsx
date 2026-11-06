@@ -60,7 +60,8 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
     showToast,
     currentUser,
     openAuthModal,
-    logoutUser
+    logoutUser,
+    t
   } = useApp();
 
   const [isPwaModalOpen, setIsPwaModalOpen] = useState(false);
@@ -99,7 +100,7 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
       {/* Unified Single-Section Landing Experience with Integrated Controls */}
       <div className="relative overflow-hidden rounded-3xl border border-stone-800 bg-stone-950 shadow-2xl">
         {/* Background Visual Graphic with Overlay */}
-        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-gradient-to-br from-amber-500/10 via-stone-950 to-stone-950">
+        <div className="absolute inset-0 z-0 opacity-25 pointer-events-none bg-gradient-to-br from-[#1c6170]/30 via-stone-950 to-stone-950">
           <img
             src="/assets/images/hero_coastal_ride_1793338340532.jpg"
             alt=""
@@ -116,15 +117,19 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
           
           {/* Brand Identity */}
           <div className="flex items-center gap-3 self-start md:self-auto">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center shadow-md shadow-amber-500/25 shrink-0">
-              <Bike className="w-5 h-5 text-stone-950 stroke-[2.5]" />
+            <div className="w-10 h-10 rounded-xl bg-[#1c6170]/20 border border-[#1c6170]/40 flex items-center justify-center p-1 shadow-sm shrink-0">
+              <img 
+                src="/assets/aistudio/rideout-icon-mark-transparent_40eb04ee.png" 
+                alt="Rideout Rentals Logo" 
+                className="w-full h-full object-contain" 
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-base font-extrabold tracking-tight text-stone-100">
-                  Rideout Rentals
+                <span className="text-base font-black tracking-tight text-stone-100">
+                  RIDEOUT <span className="text-amber-400 font-bold text-xs tracking-wider">RENTALS</span>
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20 font-mono font-semibold">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#1c6170]/20 text-[#a0c5cc] border border-[#1c6170]/40 font-mono font-semibold">
                   Operating System
                 </span>
               </div>
@@ -145,7 +150,7 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
               title="Jump to features and subscription pricing schedule"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span>Features & Pricing</span>
+              <span>{t('featuresPricing')}</span>
             </button>
 
             {/* Country Selector with Flag */}
@@ -219,14 +224,14 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
                   title={`Logged in: ${currentUser.email}. Click to open depot console popup.`}
                 >
                   <LayoutDashboard className="w-3.5 h-3.5" />
-                  <span>Depot Console</span>
+                  <span>{t('depotConsole')}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={logoutUser}
                   className="p-1.5 text-xs text-stone-400 hover:text-red-400 hover:bg-stone-800 rounded-xl transition-colors border border-transparent hover:border-stone-800"
-                  title="Sign Out"
+                  title={t('signOut')}
                 >
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
@@ -244,7 +249,7 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                 </svg>
-                <span>Sign In</span>
+                <span>{t('signIn')}</span>
               </button>
             )}
 
@@ -265,12 +270,12 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
 
             {/* Headline */}
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-stone-100 leading-[1.12]">
-              The Operating System for <span className="bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 bg-clip-text text-transparent">Vehicle & Scooter Rentals</span>
+              {t('heroTitle')}
             </h1>
 
             {/* Subheading */}
             <p className="text-sm sm:text-base md:text-lg text-stone-300 max-w-2xl leading-relaxed">
-              Dispatch fleets across Southeast Asia with digital 360° inspections, automatic fuel bar deficit reconciliation, smart dynamic pricing, and omnichannel customer chat.
+              {t('heroSub')}
             </p>
 
             {/* CTA Buttons: View Demo & Search a Motorbike through our Business Partners */}
@@ -288,7 +293,7 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                 </svg>
-                <span>Subscribe & Try Free with Google</span>
+                <span>{t('subscribeFree')}</span>
                 <ArrowRight className="w-4 h-4 ml-1" />
               </button>
 
@@ -302,7 +307,7 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
                 <div className="w-5 h-5 rounded-full bg-amber-400 flex items-center justify-center text-stone-950 group-hover:scale-110 transition-transform">
                   <Play className="w-3 h-3 fill-stone-950 stroke-none ml-0.5" />
                 </div>
-                <span>View Demo</span>
+                <span>{t('viewDemo')}</span>
               </button>
 
               {/* Search a Motorbike through Our Business Partners: Opens Customer Booking Modal */}
@@ -313,7 +318,7 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
                 title="Search and book a scooter or motorbike through our partner rental depots"
               >
                 <MapPin className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>Search a Motorbike through Our Business Partners</span>
+                <span>{t('searchMotorbike')}</span>
               </button>
 
               {/* Install Standalone App (PWA) Button */}
@@ -324,7 +329,7 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
                 title="Install web app on mobile or desktop without app store"
               >
                 <Download className="w-4 h-4 text-emerald-400" />
-                <span>Install Standalone App</span>
+                <span>{t('installApp')}</span>
               </button>
 
             </div>
@@ -333,15 +338,15 @@ export const RideoutRentalsLandingView: React.FC<RideoutRentalsLandingViewProps>
             <div className="flex flex-wrap items-center gap-5 pt-1 text-xs text-stone-400">
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>30-Day Free Trial ({formatPrice(0, currency)} Month 1)</span>
+                <span>{t('freeTrialMonth1')} ({formatPrice(0, currency)})</span>
               </span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Works on PC, Mac, Android & iPhone</span>
+                <span>{t('worksAcrossDevices')}</span>
               </span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Offline Counter Mode</span>
+                <span>{t('offlineCounterMode')}</span>
               </span>
             </div>
           </div>

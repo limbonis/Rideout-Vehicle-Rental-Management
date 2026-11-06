@@ -24,29 +24,45 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
   onOpenNewBooking,
   onSelectReservationForPickup,
 }) => {
-  const { bikes, reservations, socialPosts, setActiveTab } = useApp();
+  const { 
+    bikes, 
+    businessBikes,
+    reservations, 
+    businessReservations,
+    currentBusiness,
+    socialPosts, 
+    setActiveTab 
+  } = useApp();
 
-  const activeRentals = reservations.filter(r => r.status === 'active');
-  const pendingPickups = reservations.filter(r => r.status === 'confirmed');
-  const availableBikes = bikes.filter(b => b.status === 'available');
-  const totalBikes = bikes.length;
-  const utilizationRate = Math.round(((totalBikes - availableBikes.length) / (totalBikes || 1)) * 100);
+  const activeResList = businessReservations || reservations.filter(r => r.businessId === currentBusiness.id);
+  const activeBikesList = businessBikes || bikes.filter(b => b.businessId === currentBusiness.id);
+
+  const activeRentals = activeResList.filter(r => r.status === 'active');
+  const pendingPickups = activeResList.filter(r => r.status === 'confirmed');
+  const availableBikes = activeBikesList.filter(b => b.status === 'available');
+  const totalBikes = activeBikesList.length;
+  const utilizationRate = totalBikes > 0 
+    ? Math.round(((totalBikes - availableBikes.length) / totalBikes) * 100) 
+    : 0;
 
   // Calculate total monthly revenue from all confirmed/active/completed reservations
-  const totalRevenue = reservations
+  const totalRevenue = activeResList
     .filter(r => r.status !== 'cancelled')
     .reduce((sum, r) => sum + r.subtotal, 0);
 
+  const mainDepotName = currentBusiness.depots?.[0]?.name || currentBusiness.name;
+  const operatingTown = currentBusiness.customization?.operatingTown || currentBusiness.location || 'Depot Hub';
+
   return (
     <div className="space-y-8">
-      {/* Hero Welcome & Zambales Coastal Dispatch Bar */}
+      {/* Hero Welcome & Dispatch Bar */}
       <div className="relative overflow-hidden rounded-xl border border-stone-800 bg-stone-900/60 p-6 md:p-8">
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 text-xs text-stone-400 mb-2">
-              <span>Zambales Hub</span>
+              <span className="font-semibold text-stone-300">{mainDepotName}</span>
               <span aria-hidden="true">·</span>
-              <span>San Felipe Depot</span>
+              <span>{operatingTown}</span>
               <span aria-hidden="true">·</span>
               <span className="text-amber-400">Road Conditions Optimal</span>
             </div>

@@ -212,8 +212,8 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClos
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 pr-8">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 p-2.5 flex items-center justify-center shadow-lg shadow-amber-500/20 shrink-0">
-            <img src="/pwa-192x192.png" alt="Rideout Rentals Icon" className="w-full h-full object-contain rounded-lg" />
+          <div className="w-12 h-12 rounded-2xl bg-[#1c6170]/20 border border-[#1c6170]/40 p-2 flex items-center justify-center shadow-lg shadow-[#1c6170]/20 shrink-0">
+            <img src="/assets/aistudio/rideout-icon-mark-transparent_40eb04ee.png" alt="Rideout Rentals Icon" className="w-full h-full object-contain" />
           </div>
           <div>
             <div className="flex items-center gap-2">

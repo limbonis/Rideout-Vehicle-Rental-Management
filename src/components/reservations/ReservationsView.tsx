@@ -19,6 +19,7 @@ import {
   Mail,
   Zap,
   Smartphone,
+  Phone,
   FileSpreadsheet
 } from 'lucide-react';
 import { RentalContractModal } from './RentalContractModal';
@@ -36,7 +37,10 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
 }) => {
   const { 
     reservations, 
+    businessReservations,
     bikes, 
+    businessBikes,
+    currentBusiness,
     updateReservationStatus, 
     updateReservationPayment,
     setActiveTab,
@@ -50,8 +54,11 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
   const [selectedQuickChatRes, setSelectedQuickChatRes] = useState<Reservation | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  const activeReservations = businessReservations || reservations.filter(r => r.businessId === currentBusiness.id);
+  const activeBikes = businessBikes || bikes.filter(b => b.businessId === currentBusiness.id);
+
   // Filter reservations
-  const filteredReservations = reservations.filter((res) => {
+  const filteredReservations = activeReservations.filter((res) => {
     const matchesStatus = statusFilter === 'all' || res.status === statusFilter;
     const matchesSearch = 
       res.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -147,11 +154,11 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
         {/* Status segmented buttons */}
         <div className="flex items-center gap-1 p-1 bg-stone-900 border border-stone-800 rounded-lg overflow-x-auto scrollbar-none">
           {[
-            { id: 'all', label: 'All Bookings', count: reservations.length },
-            { id: 'confirmed', label: 'Confirmed', count: reservations.filter(r => r.status === 'confirmed').length },
-            { id: 'active', label: 'On Road', count: reservations.filter(r => r.status === 'active').length },
-            { id: 'pending', label: 'Pending', count: reservations.filter(r => r.status === 'pending').length },
-            { id: 'completed', label: 'Completed', count: reservations.filter(r => r.status === 'completed').length },
+            { id: 'all', label: 'All Bookings', count: activeReservations.length },
+            { id: 'confirmed', label: 'Confirmed', count: activeReservations.filter(r => r.status === 'confirmed').length },
+            { id: 'active', label: 'On Road', count: activeReservations.filter(r => r.status === 'active').length },
+            { id: 'pending', label: 'Pending', count: activeReservations.filter(r => r.status === 'pending').length },
+            { id: 'completed', label: 'Completed', count: activeReservations.filter(r => r.status === 'completed').length },
           ].map((tab) => {
             const isActive = statusFilter === tab.id;
             return (
@@ -271,7 +278,7 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
                         </div>
                       </td>
 
-                      {/* Rental Window */}
+                      {/* Rental Window & Depot Routing */}
                       <td className="py-3.5 px-4 align-top">
                         <div className="font-mono text-stone-200">
                           {res.startDate} <span className="text-stone-500 text-[10px]">({res.startTime})</span>
@@ -282,6 +289,19 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
                         <div className="text-[11px] text-stone-400 font-mono mt-1">
                           {res.totalDays} Day(s) · {res.pickupLocation.split('(')[0]}
                         </div>
+                        {(res.pickupDepotName || res.returnDepotName) && (
+                          <div className="mt-1.5 px-2 py-1 rounded bg-stone-950 border border-stone-800 text-[10px] font-mono text-amber-300">
+                            <div className="flex items-center gap-1">
+                              <span>📍 Pickup: {res.pickupDepotName || 'Main Depot'}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-stone-400">
+                              <span>🏁 Return: {res.returnDepotName || res.pickupDepotName || 'Main Depot'}</span>
+                              {res.interDepotFee && res.interDepotFee > 0 ? (
+                                <span className="text-emerald-400 font-bold ml-1">(+₱{res.interDepotFee})</span>
+                              ) : null}
+                            </div>
+                          </div>
+                        )}
                       </td>
 
                       {/* Financials & Promo */}
@@ -318,9 +338,29 @@ export const ReservationsView: React.FC<ReservationsViewProps> = ({
                         )}
                       </td>
 
-                      {/* Action buttons */}
+                      {/* Action buttons with direct Gateway Phone calling & SMS */}
                       <td className="py-3.5 px-4 align-top text-right">
                         <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1.5 flex-wrap">
+                          {/* Native Gateway Call Button */}
+                          <a
+                            href={`tel:${res.customerPhone}`}
+                            className="p-1.5 text-stone-300 hover:text-emerald-400 bg-stone-850 hover:bg-stone-800 border border-stone-700/80 rounded transition-colors"
+                            title={`Call renter via Nominated Phone Gateway (${res.customerPhone})`}
+                          >
+                            <Phone className="w-3.5 h-3.5" />
+                          </a>
+
+                          {/* Native Gateway SMS Button */}
+                          <a
+                            href={`sms:${res.customerPhone}?body=${encodeURIComponent(
+                              `Hi ${res.customerName}! Greetings from ${currentBusiness.name}. Your motorbike booking ${res.bookingRef} for ${res.bikeName} is ready.`
+                            )}`}
+                            className="p-1.5 text-stone-300 hover:text-amber-400 bg-stone-850 hover:bg-stone-800 border border-stone-700/80 rounded transition-colors"
+                            title={`Send native Android SMS to ${res.customerPhone}`}
+                          >
+                            <Smartphone className="w-3.5 h-3.5" />
+                          </a>
+
                           {/* Breezy Quick Chat Button */}
                           <button
                             onClick={() => setSelectedQuickChatRes(res)}

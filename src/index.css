@@ -1,10 +1,67 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-brand-teal: #1c6170;
+  --color-brand-teal-dark: #123e47;
+  --color-brand-teal-light: #25788a;
+  --color-brand-teal-subtle: #e8f3f5;
+  --color-brand-teal-surface: #0a161b;
+  --color-brand-teal-card: #0f2229;
+
+  --color-brand-orange: #d87a38;
+  --color-brand-orange-dark: #ba6224;
+  --color-brand-orange-light: #e58a49;
+  --color-brand-orange-subtle: #fdf2ea;
+
+  /* Remap amber palette directly to the official Rideout road ribbon orange (#d87a38) */
+  --color-amber-50: #fdf6f0;
+  --color-amber-100: #faebd9;
+  --color-amber-200: #f5d4b3;
+  --color-amber-300: #ebb583;
+  --color-amber-400: #d87a38;
+  --color-amber-500: #c66629;
+  --color-amber-600: #ab511f;
+  --color-amber-700: #8a3e1c;
+  --color-amber-800: #71331c;
+  --color-amber-900: #5d2b1a;
+
+  /* Enrich dark theme backgrounds with maritime teal-slate from the Rideout brand (#1c6170) */
+  --color-stone-950: #0a161b;
+  --color-stone-900: #0f2229;
+  --color-stone-850: #142a33;
+  --color-stone-800: #1a3642;
+  --color-stone-700: #294f5e;
+  --color-stone-600: #3f6b7c;
+}
+
 @layer base {
   * {
-    border-color: var(--color-stone-800, #292524);
+    border-color: var(--color-stone-800, #1a3642);
   }
+}
+
+/* Custom Rideout Brand Utilities */
+.bg-rideout-teal {
+  background-color: #1c6170;
+}
+.bg-rideout-teal-dark {
+  background-color: #123e47;
+}
+.text-rideout-teal {
+  color: #1c6170;
+}
+.border-rideout-teal {
+  border-color: #1c6170;
+}
+.bg-rideout-orange {
+  background-color: #d87a38;
+}
+.text-rideout-orange {
+  color: #d87a38;
+}
+.border-rideout-orange {
+  border-color: #d87a38;
 }
 
 /* Print styling for customer rental agreements & inspection reports */
